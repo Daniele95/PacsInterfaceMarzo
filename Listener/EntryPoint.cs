@@ -11,6 +11,8 @@ namespace Listener
 
         public CurrentListener()
         {
+            Console.Title = "Listener";
+
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = Path.GetDirectoryName("./");
             watcher.Filter = Path.GetFileName("ServerConfig.txt");

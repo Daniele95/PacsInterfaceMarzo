@@ -1,4 +1,2 @@
-SeriesInstanceUID
-StudyInstanceUID
 StudyDate
 Modality

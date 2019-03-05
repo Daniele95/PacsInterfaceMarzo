@@ -42,16 +42,14 @@ namespace PacsInterface
                 // aggiungo la colonna
                 // e riduco a 0 la visibilità delle colonne nascoste
                 string contents = File.ReadAllText("SeriesColumnsToShow.txt");
-                bool isHidden = !contents.Contains(property.Name);
-                int colWidth = isHidden ? 1 : 0;
-                downloadPage.dgUsers.Columns.Add(new DataGridTextColumn
-                {
-                    Header = property.Name,
-                    Binding = new Binding(property.Name),
-                    Width = 100 * (1 - colWidth)
-                });
+                if (contents.Contains(property.Name))
+                    downloadPage.dataGrid.Columns.Add(new DataGridTextColumn
+                    {
+                        Header = property.Name,
+                        Binding = new Binding(property.Name)
+                    });
             }
-            downloadPage.dgUsers.Columns.Add(new DataGridTemplateColumn
+            downloadPage.dataGrid.Columns.Add(new DataGridTemplateColumn
             {
                 Header = "Image",
                 CellTemplate = downloadPage.FindResource("iconTemplate") as DataTemplate
@@ -69,28 +67,13 @@ namespace PacsInterface
                 myItemValues = (IDictionary<string, object>)myItem;
                 myItemValues[property[j].Name] = property[j].GetValue(response);
             }
-         //   myItem.Image = image;
-            downloadPage.dgUsers.Items.Add(myItem);
+            downloadPage.dataGrid.Items.Add(myItem);
         }
 
-        public static void addImage(DownloadPage downloadPage,FrameworkElement sender, BitmapImage image)
+        public static void addImage(DownloadPage downloadPage, FrameworkElement sender, BitmapImage image)
         {
-            var dyn = ((FrameworkElement)sender).DataContext as dynamic; 
+            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
             dyn.Image = image;
         }
-        // show or hide button
-        /*
-        void ShowHideDetails(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("ciao");
-            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
-                if (vis is DataGridRow)
-                {
-                    var row = (DataGridRow)vis;
-                    row.DetailsVisibility =
-                    row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    break;
-                }
-        }*/
     }
 }

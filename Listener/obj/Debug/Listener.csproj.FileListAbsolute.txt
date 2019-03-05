@@ -10,3 +10,4 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\List
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.csproj.CopyComplete
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.exe
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.csprojAssemblyReference.cache

@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using static PacsInterface.QueryParams;
 
@@ -18,8 +17,9 @@ namespace PacsInterface
     class Program
     {
         MainWindow mainWindow;
-        CurrentConfiguration configuration;
 
+        // configure server address and monitor changes in configuration
+        CurrentConfiguration configuration;
         public class CurrentConfiguration
         {
             public string ip { get; private set; }
@@ -45,8 +45,7 @@ namespace PacsInterface
             }
 
         }
-
-        private void OnChanged(object source, FileSystemEventArgs e)
+        private void onConfigurationChanged(object source, FileSystemEventArgs e)
         {
             configuration.update();
 
@@ -60,11 +59,10 @@ namespace PacsInterface
 
         }
 
-
+        // init
         public Program(MainWindow mainWindow)
         {
-            configuration = new CurrentConfiguration();
-
+            // init listener
             Process[] listeners = Process.GetProcessesByName("Listener");
             if (listeners.Length == 0)
             {
@@ -78,37 +76,32 @@ namespace PacsInterface
                 Process.Start("Listener");
             }
 
-            this.mainWindow = mainWindow;
-
-            // setup GUI
+            // setup GUI and GUI events
             SetupGUI.setupStudyTable(mainWindow);
             SetupGUI.setupSeriesTable(mainWindow.downloadPage);
-
-            // handle events
-            mainWindow.queryPage.Search.Click += searchButton_ClickEvent;
-            mainWindow.queryPage.localSearch.Click += localSearchButton_ClickEvent;
-            mainWindow.downloadPage.series_ClickEvent += series_ClickEvent;
-            mainWindow.downloadPage.thumb_ClickEvent += thumb_ClickEvent;
+            mainWindow.queryPage.localSearch.Click += onLocalSearchButtonClicked;
+            mainWindow.queryPage.Search.Click += onSearchButtonClicked;
+            mainWindow.downloadPage.series_ClickEvent += onSeriesClicked;
+            mainWindow.downloadPage.thumb_ClickEvent += onThumbClicked;
 
             // watch changes in configuration
+            configuration = new CurrentConfiguration();
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = Path.GetDirectoryName("./");
             watcher.Filter = Path.GetFileName("ServerConfig.txt");
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
+            watcher.Changed += new FileSystemEventHandler(onConfigurationChanged);
             watcher.EnableRaisingEvents = true;
 
-
+            this.mainWindow = mainWindow;
             mainWindow.frame.Navigate(mainWindow.queryPage);
         }
 
-
-
-        // LOCAL SEARCH----------------------------------------------------------------------
+        // local search----------------------------------------------------------------------
         List<StudyQueryOut> studyResponses;
-        void localSearchButton_ClickEvent(object a, EventArgs b)
+        void onLocalSearchButtonClicked(object a, EventArgs b)
         {
-            mainWindow.queryPage.study_ClickEvent -= study_ClickEvent;
-            mainWindow.queryPage.study_ClickEvent += localStudy_ClickEvent;
+            mainWindow.queryPage.study_ClickEvent -= onStudyClicked;
+            mainWindow.queryPage.study_ClickEvent += onLocalStudyClicked;
             //
 
             StudyQueryIn studyQuery = new StudyQueryIn(mainWindow.queryPage);
@@ -132,18 +125,18 @@ namespace PacsInterface
                     mainWindow.queryPage.listView.Items.Add(result);
             }
         }
-        void localStudy_ClickEvent(ListViewItem sender)
+        void onLocalStudyClicked(ListViewItem sender)
         {
             MessageBox.Show("clicked");
         }
 
-        // EXTERN SEARCH:--------------------------------------------------------------------
+        // extern search---------------------------------------------------------------------
 
         // search STUDIES-----------------------------------------------
-        void searchButton_ClickEvent(object a, EventArgs b)
+        void onSearchButtonClicked(object a, EventArgs b)
         {
-            mainWindow.queryPage.study_ClickEvent -= localStudy_ClickEvent;
-            mainWindow.queryPage.study_ClickEvent += study_ClickEvent;
+            mainWindow.queryPage.study_ClickEvent -= onLocalStudyClicked;
+            mainWindow.queryPage.study_ClickEvent += onStudyClicked;
             //
 
             StudyQueryIn studyQuery = new StudyQueryIn(mainWindow.queryPage);
@@ -194,7 +187,7 @@ namespace PacsInterface
 
         // search SERIES------------------------------------------------
         List<SeriesQueryOut> seriesResponses;
-        void study_ClickEvent(ListViewItem sender)
+        void onStudyClicked(ListViewItem sender)
         {
             // find series ...............................
             var studyQueryOut = sender.Content as StudyQueryOut;
@@ -219,7 +212,7 @@ namespace PacsInterface
             client.AddRequest(cfind);
 
             mainWindow.frame.Navigate(mainWindow.downloadPage);
-            mainWindow.downloadPage.dgUsers.Items.Clear();
+            mainWindow.downloadPage.dataGrid.Items.Clear();
             seriesResponses = new List<SeriesQueryOut>();
 
             try
@@ -243,8 +236,35 @@ namespace PacsInterface
             }
         }
 
-        // search IMAGES------------------------------------------------
+        // download sample image----------------------------------------
         List<string> imageIDs;
+        public void onThumbClicked(FrameworkElement sender)
+        {
+            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
+            var list = mainWindow.downloadPage.dataGrid.Items;
+            var index = list.IndexOf(dyn);
+            var seriesResponse = seriesResponses[index];
+
+            try
+            {
+                BitmapImage img = new BitmapImage();
+                string SOPInstanceUID = getImagesInSeries(seriesResponse);
+                if (SOPInstanceUID != "")
+                {
+                    Console.WriteLine("Downloading from server " + configuration.ip + ":" + configuration.port +
+                        " sample image no. " + SOPInstanceUID + Environment.NewLine);
+                    img = downloadSampleImage(seriesResponse, SOPInstanceUID);
+
+                    SetupGUI.addImage(mainWindow.downloadPage, sender, img);
+                    Console.WriteLine("Done.");
+                }
+            }
+            catch (Exception ec)
+            {
+                Console.WriteLine(ec.StackTrace);
+            }
+
+        }
         string getImagesInSeries(SeriesQueryOut seriesResponse)
         {
             // find images ...............................
@@ -293,36 +313,6 @@ namespace PacsInterface
 
             return SOPInstanceUID;
         }
-
-        // download sample image----------------------------------------
-        public void thumb_ClickEvent(FrameworkElement sender)
-        {
-
-            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
-            var list = mainWindow.downloadPage.dgUsers.Items;
-            var index = list.IndexOf(dyn);
-            var seriesResponse = seriesResponses[index];
-
-            try
-            {
-                BitmapImage img = new BitmapImage();
-                string SOPInstanceUID = getImagesInSeries(seriesResponse);
-                if (SOPInstanceUID != "")
-                {
-                    Console.WriteLine("Downloading from server " + configuration.ip + ":" + configuration.port +
-                        " sample image no. " + SOPInstanceUID + Environment.NewLine);
-                    img = downloadSampleImage(seriesResponse, SOPInstanceUID);
-
-                    SetupGUI.addImage(mainWindow.downloadPage, sender, img);
-                    Console.WriteLine("Done.");
-                }
-            }
-            catch (Exception ec)
-            {
-                Console.WriteLine(ec.StackTrace);
-            }
-            
-        }
         BitmapImage downloadSampleImage(SeriesQueryOut seriesResponse, string SOPInstanceUID)
         {
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.StudyInstanceUID, seriesResponse.SeriesInstanceUID, SOPInstanceUID);
@@ -353,14 +343,16 @@ namespace PacsInterface
         }
 
         // download series----------------------------------------------
-        void series_ClickEvent(ListViewItem sender)
+        void onSeriesClicked(DataGridRow sender)
         {
-            var obj = (IDictionary<string, object>)(sender.Content);
-            string studyInstanceUID = obj["StudyInstanceUID"].ToString();
-            string seriesInstanceUID = obj["SeriesInstanceUID"].ToString();
+            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
+            var list = mainWindow.downloadPage.dataGrid.Items;
+            var index = list.IndexOf(dyn);
+            var seriesResponse = seriesResponses[index];
+
             // download
             File.Delete("singleImage.txt");
-            var cmove = new DicomCMoveRequest(configuration.thisNodeAET, studyInstanceUID, seriesInstanceUID);
+            var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.StudyInstanceUID, seriesResponse.SeriesInstanceUID);
 
             var client = new DicomClient();
             client.AddRequest(cmove);

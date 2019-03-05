@@ -11,8 +11,11 @@
     <Page.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="iconTemplate">
-                <Button Click="button_download_image">
-                    <Image Source="{Binding Image}"  Height="64" Width="64"/>
+                <Button Click="Thumb_Clicked">
+                    <StackPanel x:Name="stackPanel"  Margin="0">
+                        <Image Source="{Binding Image}"  Height="64" Width="64"/>
+                        <Label x:Name="buttonLabel" Content="Click for preview" HorizontalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
             </DataTemplate>
         </ResourceDictionary>
@@ -20,7 +23,13 @@
     
     
     <Grid Margin="10">
-        <DataGrid Name="dgUsers"  x:FieldModifier="public" AutoGenerateColumns="False">
+        <DataGrid Name="dataGrid"  x:FieldModifier="public" AutoGenerateColumns="False">
+
+            <DataGrid.ItemContainerStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <EventSetter Event="PreviewMouseDoubleClick" Handler="Series_Clicked" />
+                </Style>
+            </DataGrid.ItemContainerStyle>
             <DataGrid.Columns>
 
             </DataGrid.Columns>

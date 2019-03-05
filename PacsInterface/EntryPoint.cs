@@ -11,6 +11,7 @@ namespace PacsInterface
         [STAThread]
         static void Main(string[] args)
         {
+            Console.Title = "PacsInterfaceConsole";
             MainWindow mainWindow = new MainWindow();
             Program program = new Program(mainWindow);
 
