@@ -12,18 +12,23 @@ namespace GUI
             dataGrid.IsReadOnly = true;
         }
 
-        public delegate void Series_ClickEvent(DataGridRow sender);
+        public delegate void Series_ClickEvent(int seriesNumber);
         public event Series_ClickEvent series_ClickEvent;
         private void Series_Clicked(object sender, RoutedEventArgs e)
         {
             DataGridRow item = sender as DataGridRow;
+
+            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
+            var list = dataGrid.Items;
+            int index = list.IndexOf(dyn);
+
             if (item != null && item.IsSelected)
             {
-                series_ClickEvent(item);
+                series_ClickEvent(index);
             }
         }
 
-        public delegate void Thumb_ClickEvent(FrameworkElement s);
+        public delegate void Thumb_ClickEvent(int seriesNumber);
         public event Thumb_ClickEvent thumb_ClickEvent;
         private void Thumb_Clicked(object sender, RoutedEventArgs e)
         {
@@ -36,10 +41,11 @@ namespace GUI
             stackPanel.Children.Remove(stackPanel.FindName("buttonLabel") as Label);
 
             //Get the row that contains this button
-            var asd = ((FrameworkElement)sender).DataContext as dynamic;
+            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
+            var list = dataGrid.Items;
+            int index = list.IndexOf(dyn);
 
-            thumb_ClickEvent(sender as FrameworkElement);
-
+            thumb_ClickEvent(index);
         }
     }
 }

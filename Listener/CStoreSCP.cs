@@ -97,59 +97,64 @@ namespace Listener
             else // else save image to database
             {
                 Console.WriteLine("now save in database" + Environment.NewLine);
-                // get parameters
-                string dateString = "";
-                request.Dataset.TryGetSingleValue(DicomTag.StudyDate, out dateString);
-                DateTime date = DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-                string StudyInstanceUID = "";
-                request.Dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
-                string SeriesInstanceUID = "";
-                request.Dataset.TryGetSingleValue(DicomTag.SeriesInstanceUID, out SeriesInstanceUID);
-                string SOPInstanceUID = "";
-                request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
-
-                // save in database folder
-                var pathInDatabase = Path.GetFullPath("./databaseFolder");
-                pathInDatabase = Path.Combine(pathInDatabase, date.Year.ToString(), date.Month.ToString(), date.Day.ToString(),
-                    StudyInstanceUID, SeriesInstanceUID);
-                if (!Directory.Exists(pathInDatabase)) Directory.CreateDirectory(pathInDatabase);
-                string imagePath = Path.Combine(pathInDatabase,
-                    SOPInstanceUID.Substring(SOPInstanceUID.Length - 3, 3)) + ".dcm";
-                if (!File.Exists(imagePath))
+                try
                 {
-                    request.File.Save(imagePath);
-                    Console.WriteLine("received and saved a file in database");
+
+                    // get parameters
+                    string dateString = "";
+                    request.Dataset.TryGetSingleValue(DicomTag.StudyDate, out dateString);
+                    DateTime date = DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+                    string StudyInstanceUID = "";
+                    request.Dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
+                    string SeriesInstanceUID = "";
+                    request.Dataset.TryGetSingleValue(DicomTag.SeriesInstanceUID, out SeriesInstanceUID);
+                    string SOPInstanceUID = "";
+                    request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
+
+                    // save in database folder
+                    var pathInDatabase = Path.GetFullPath("./databaseFolder");
+                    pathInDatabase = Path.Combine(pathInDatabase, date.Year.ToString(), date.Month.ToString(), date.Day.ToString(),
+                        StudyInstanceUID, SeriesInstanceUID);
+                    if (!Directory.Exists(pathInDatabase)) Directory.CreateDirectory(pathInDatabase);
+                    string imagePath = Path.Combine(pathInDatabase,
+                        SOPInstanceUID.Substring(SOPInstanceUID.Length - 3, 3)) + ".dcm";
+                    if (!File.Exists(imagePath))
+                    {
+                        request.File.Save(imagePath);
+                        Console.WriteLine("received and saved a file in database");
+                    }
+                    else Console.WriteLine("File already present in database");
+
+                    //DicomAnonymizer.SecurityProfileOptions.
+                    var profile = new DicomAnonymizer.SecurityProfile();
+                    profile.PatientName = "random";
+                    DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
+                    DicomDataset anonymizedDataset = anonymizer.Anonymize(request.Dataset);
+
+                    // get more data
+                    string PatientName = "";
+                    anonymizedDataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
+                    Console.WriteLine("patient name " + PatientName);
+                    string PatientID = "";
+                    anonymizedDataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
+
+
+                    // add entry in database
+                    var study = new StudyQueryOut
+                    {
+                        StudyInstanceUID = StudyInstanceUID,
+                        PatientID = PatientID,
+                        PatientName = PatientName,
+                        StudyDate = date
+                    };
+                    using (var db = new LiteDatabase("./databaseFolder/database.db"))
+                    {
+                        var studies = db.GetCollection<StudyQueryOut>("studies");
+                        if (studies.FindById(StudyInstanceUID) == null)
+                            studies.Insert(study);
+                    }
                 }
-                else Console.WriteLine("File already present in database");
-
-                //DicomAnonymizer.SecurityProfileOptions.
-                var profile = new DicomAnonymizer.SecurityProfile();
-                profile.PatientName = "random";
-                DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
-                DicomDataset anonymizedDataset = anonymizer.Anonymize(request.Dataset);
-
-                // get more data
-                string PatientName = "";
-                anonymizedDataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
-                Console.WriteLine("patient name " + PatientName);
-                string PatientID = "";
-                anonymizedDataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
-
-
-                // add entry in database
-                var study = new StudyQueryOut
-                {
-                    StudyInstanceUID = StudyInstanceUID,
-                    PatientID = PatientID,
-                    PatientName = PatientName,
-                    StudyDate = date
-                };
-                using (var db = new LiteDatabase("./databaseFolder/database.db"))
-                {
-                    var studies = db.GetCollection<StudyQueryOut>("studies");
-                    if (studies.FindById(StudyInstanceUID) == null)
-                        studies.Insert(study);
-                }
+                catch (Exception ec) { Console.WriteLine(ec.Message + "   " + ec.ToString()); }
 
             }
             return new DicomCStoreResponse(request, DicomStatus.Success);

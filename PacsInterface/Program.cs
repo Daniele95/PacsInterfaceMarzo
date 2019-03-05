@@ -238,13 +238,9 @@ namespace PacsInterface
 
         // download sample image----------------------------------------
         List<string> imageIDs;
-        public void onThumbClicked(FrameworkElement sender)
+        public void onThumbClicked(int seriesNumber)
         {
-            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
-            var list = mainWindow.downloadPage.dataGrid.Items;
-            var index = list.IndexOf(dyn);
-            var seriesResponse = seriesResponses[index];
-
+            var seriesResponse = seriesResponses[seriesNumber];
             try
             {
                 BitmapImage img = new BitmapImage();
@@ -255,7 +251,7 @@ namespace PacsInterface
                         " sample image no. " + SOPInstanceUID + Environment.NewLine);
                     img = downloadSampleImage(seriesResponse, SOPInstanceUID);
 
-                    SetupGUI.addImage(mainWindow.downloadPage, sender, img);
+                    SetupGUI.addImage(mainWindow.downloadPage, seriesNumber, img);
                     Console.WriteLine("Done.");
                 }
             }
@@ -343,12 +339,9 @@ namespace PacsInterface
         }
 
         // download series----------------------------------------------
-        void onSeriesClicked(DataGridRow sender)
+        void onSeriesClicked(int seriesNumber)
         {
-            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
-            var list = mainWindow.downloadPage.dataGrid.Items;
-            var index = list.IndexOf(dyn);
-            var seriesResponse = seriesResponses[index];
+            var seriesResponse = seriesResponses[seriesNumber];
 
             // download
             File.Delete("singleImage.txt");

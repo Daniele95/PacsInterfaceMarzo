@@ -1,6 +1,6 @@
 dicomserver.co.uk
 104
-ANY
+MEDCONNECTIONS
 True
 ANATOMAGETABLE
 104

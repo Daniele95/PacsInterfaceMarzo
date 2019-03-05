@@ -70,9 +70,9 @@ namespace PacsInterface
             downloadPage.dataGrid.Items.Add(myItem);
         }
 
-        public static void addImage(DownloadPage downloadPage, FrameworkElement sender, BitmapImage image)
+        public static void addImage(DownloadPage downloadPage, int seriesNumber, BitmapImage image)
         {
-            var dyn = ((FrameworkElement)sender).DataContext as dynamic;
+            var dyn = downloadPage.dataGrid.Items[seriesNumber] as dynamic;
             dyn.Image = image;
         }
     }
