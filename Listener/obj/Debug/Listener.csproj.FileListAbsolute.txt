@@ -1,0 +1,12 @@
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Listener.exe.config
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Listener.exe
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Listener.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Dicom.Core.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\LiteDB.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Dicom.Core.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\Dicom.Core.xml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\bin\Debug\LiteDB.xml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.csproj.CoreCompileInputs.cache
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.csproj.CopyComplete
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.exe
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Listener\obj\Debug\Listener.pdb

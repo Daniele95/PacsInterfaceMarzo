@@ -1,0 +1,7 @@
+PatientID
+PatientName
+StudyDate
+ModalitiesInStudy
+PatientBirthDate
+StudyInstanceUID
+StudyDescription

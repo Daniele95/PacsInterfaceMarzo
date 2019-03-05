@@ -1,0 +1,6 @@
+dicomserver.co.uk
+104
+ANY
+True
+ANATOMAGETABLE
+104

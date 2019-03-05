@@ -1,0 +1,18 @@
+﻿<Window x:Class="Configuration.EditServerPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Edit Server Info" Height="166.52" Width="328.571">
+    <Grid>
+        <Button x:Name="addButton" Content="Set" HorizontalAlignment="Left" Margin="117,108,0,0" VerticalAlignment="Top" Width="75"/>
+        <TextBox x:Name="portTextBox" HorizontalAlignment="Left" Height="23" Margin="161,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="AETTextBox" HorizontalAlignment="Left" Height="23" Margin="161,42,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="30,52,0,0" TextWrapping="Wrap" Text="Application Entity Title" VerticalAlignment="Top" RenderTransformOrigin="-0.251,0.031"/>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="30,80,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" RenderTransformOrigin="-0.251,0.031"/>
+        <TextBlock x:Name="informative_textblock" HorizontalAlignment="Left" Margin="34,22,0,0" TextWrapping="Wrap" Text="Edit properties of " VerticalAlignment="Top" RenderTransformOrigin="-0.251,0.031"/>
+        <TextBlock x:Name="informative_textblock2" HorizontalAlignment="Left" Margin="126,22,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="-0.251,0.031" Width="103"/>
+
+    </Grid>
+</Window>

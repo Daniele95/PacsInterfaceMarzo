@@ -1,0 +1,5 @@
+SeriesInstanceUID
+StudyInstanceUID
+SeriesDescription
+StudyDate
+Modality

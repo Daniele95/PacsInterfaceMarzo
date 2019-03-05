@@ -1,0 +1,17 @@
+﻿<Window x:Class="Configuration.SetThisNodeNamePopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Set Node Info" Height="200" Width="328.571">
+    <Grid>
+        <Button x:Name="setButton" Content="Set" HorizontalAlignment="Left" Margin="110,123,0,0" VerticalAlignment="Top" Width="75"/>
+        <TextBox x:Name="AETTextBox" HorizontalAlignment="Left" Height="23" Margin="157,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="portTextBox" HorizontalAlignment="Left" Height="23" Margin="157,85,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="79,16,0,0" TextWrapping="Wrap" Text="Set this node's properties" VerticalAlignment="Top" Width="186"/>
+        <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="25,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Application Entit"/><Run Text="y"/><Run Text=" "/><Run Text="T"/><Run Text="itle"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="25,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Port To Listen On"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,6 @@
+PatientID
+PatientName
+StudyDate
+ModalitiesInStudy
+PatientBirthDate
+StudyDescription
