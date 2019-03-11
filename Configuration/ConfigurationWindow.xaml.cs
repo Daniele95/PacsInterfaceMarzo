@@ -100,7 +100,6 @@ namespace Configuration
             public string PatientName { get; set; } = "";
             public string StudyDate { get; set; } = "";
             public string ModalitiesInStudy { get; set; } = "";
-            public string PatientBirthDate { get; set; } = "";
             public string StudyDescription { get; set; } = "";
         }
         public class SeriesQueryOut
@@ -124,7 +123,7 @@ namespace Configuration
         }
         void onChecked(string file, string content)
         {
-            if (isContained(file, content))
+            if (!isContained(file, content))
                 File.AppendAllText(file, content + Environment.NewLine);
         }
         void unCkecked(string file, string content)

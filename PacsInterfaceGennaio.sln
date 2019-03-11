@@ -11,7 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listener", "Listener\Listen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Configuration\Configuration.csproj", "{1FA33267-4908-4FFE-AC65-B7AF8B9BF7BA}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "..\..\..\..\Lavoro\Dicom\altro\librerie\fo-dicom-development\DICOM\DICOM.Shared.shproj", "{F9539369-1AD0-43B0-A35C-B82F6755C247}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\..\Lavoro\Dicom\altro\librerie\fo-dicom-development\DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

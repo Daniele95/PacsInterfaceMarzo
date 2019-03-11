@@ -86,17 +86,26 @@ namespace PacsInterface
 
             public StudyQueryIn(QueryPage queryPage)
             {
+                var dateMin = queryPage.StudyDateStartPicker.SelectedDate;
+                var dateMax = queryPage.StudyDateEndPicker.SelectedDate;
                 // read search fields
                 DateTime start = DateTime.Today.AddYears(-100), end = DateTime.Today;
-                if (queryPage.StudyDateStartPicker.SelectedDate != null)
+                if (dateMin != null)
+                {
                     start = queryPage.StudyDateStartPicker.SelectedDate.Value;
-                if (queryPage.StudyDateEndPicker.SelectedDate != null)
+                    end = start.AddDays(1);
+                }
+                if (dateMax != null)
+                {
                     end = queryPage.StudyDateEndPicker.SelectedDate.Value;
+                    start = end.AddDays(-1);
+                }
                 end = end.AddSeconds(86399);
 
                 StudyDate = new DicomDateRange(start, end);
                 PatientName = patientFullName(queryPage.PatientNameBox, queryPage.PatientSurnameBox);
                 ModalitiesInStudy = queryPage.ModalityBox.Text.ToString();
+                PatientID = queryPage.PatientIDBox.Text.ToString();
             }
 
             public override string ToString()

@@ -1,6 +1,7 @@
 ﻿using Dicom;
 using Dicom.Imaging;
 using Dicom.Log;
+using Dicom.Media;
 using Dicom.Network;
 using LiteDB;
 using System;
@@ -99,7 +100,6 @@ namespace Listener
                 Console.WriteLine("now save in database" + Environment.NewLine);
                 try
                 {
-
                     // get parameters
                     string dateString = "";
                     request.Dataset.TryGetSingleValue(DicomTag.StudyDate, out dateString);
@@ -113,11 +113,17 @@ namespace Listener
 
                     // save in database folder
                     var pathInDatabase = Path.GetFullPath("./databaseFolder");
+                    // take last two numbers, for examples seriesinstanceuid ends with .150.0
+                    var seriesUIDs = SeriesInstanceUID.Split('.');
+                    string seriesUID = seriesUIDs[seriesUIDs.Length - 2] +"."+ seriesUIDs[seriesUIDs.Length-1];
+                    var sopUIDs = SOPInstanceUID.Split('.');
+                    string sopUID = sopUIDs[sopUIDs.Length - 2] +"." +sopUIDs[sopUIDs.Length-1];
+
                     pathInDatabase = Path.Combine(pathInDatabase, date.Year.ToString(), date.Month.ToString(), date.Day.ToString(),
-                        StudyInstanceUID, SeriesInstanceUID);
+                        StudyInstanceUID, seriesUID);
                     if (!Directory.Exists(pathInDatabase)) Directory.CreateDirectory(pathInDatabase);
                     string imagePath = Path.Combine(pathInDatabase,
-                        SOPInstanceUID.Substring(SOPInstanceUID.Length - 3, 3)) + ".dcm";
+                        sopUID + ".dcm");
                     if (!File.Exists(imagePath))
                     {
                         request.File.Save(imagePath);
@@ -130,6 +136,11 @@ namespace Listener
                     profile.PatientName = "random";
                     DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
                     DicomDataset anonymizedDataset = anonymizer.Anonymize(request.Dataset);
+
+                    // DICOMANONYMYZER + DICOMDIR DATABASE
+                    DicomDirectoryTest s = new DicomDirectoryTest();
+                    
+                    //
 
                     // get more data
                     string PatientName = "";

@@ -6,7 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Security;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -162,6 +166,7 @@ namespace PacsInterface
                     studyResponses.Add(new StudyQueryOut(response));
                 }
                 if (!response.HasDataset) Console.WriteLine("got " + numResponses.ToString() + " studies" + Environment.NewLine);
+
             };
 
             var client = new DicomClient();
@@ -320,6 +325,7 @@ namespace PacsInterface
 
             DirectoryInfo di = new DirectoryInfo("./images/");
             foreach (FileInfo file in di.GetFiles()) file.Delete();
+
             client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
 
             var image = new BitmapImage();
@@ -354,5 +360,50 @@ namespace PacsInterface
             client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
             Console.WriteLine("Done.");
         }
+
+
+        // TLS test functions (unused)
+        void secure(bool useTls, bool noDelay, string host, int port, bool ignoreSslPolicyErrors)
+        {
+            var client = new DicomClient();
+            X509Certificate cert = new X509Certificate();
+
+            var tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
+            Stream stream = tcpClient.GetStream();
+            if (useTls)
+            {
+                var ssl = new SslStream(
+                    stream,
+                    false,
+                    (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || ignoreSslPolicyErrors);
+                ssl.AuthenticateAsClient(host);
+                ssl.AuthenticateAsClient((new Uri("")).Host, new X509Certificate2Collection(), SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
+                stream = ssl;
+            }
+            Stream networkStream = stream;
+        }
+        public string Discover(Uri remoteUri, RemoteCertificateValidationCallback ValidateCertificate)
+        {       
+            using (var client = new TcpClient("localhost", 104))
+            {
+                client.Connect("localhost:11118", 1000);
+                using (var stream = client.GetStream())
+                {
+                    using (var ssl = new SslStream(stream, false, ValidateCertificate))
+                    {
+                        ssl.AuthenticateAsClient(remoteUri.Host, new X509Certificate2Collection(), SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
+                        byte[] HelloLine = new byte[2];
+                        ssl.Write(HelloLine, 0, HelloLine.Length);
+                        ssl.Flush();
+
+                        if (ssl.RemoteCertificate == null)
+                            throw new Exception("The server did not provide an SSL certificate");
+                        var thumb = (new X509Certificate2(ssl.RemoteCertificate)).Thumbprint;
+                        return thumb;
+                    }
+                }
+            }
+        }
+
     }
 }
