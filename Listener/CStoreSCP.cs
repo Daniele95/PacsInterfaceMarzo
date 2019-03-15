@@ -126,47 +126,43 @@ namespace Listener
                         sopUID + ".dcm");
                     if (!File.Exists(imagePath))
                     {
+                        // DicomAnonymizer.SecurityProfileOptions.
+                        var profile = new DicomAnonymizer.SecurityProfile();
+                        profile.PatientName = "random";
+                        profile.PatientID = "random";
+                        DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
+                        request.Dataset = anonymizer.Anonymize(request.Dataset);
+                        //
+
+                        // get more data
+                        string PatientName = "";
+                        request.Dataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
+                        Console.WriteLine("patient name " + PatientName);
+                        string PatientID = "";
+                        request.Dataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
+
+                        // add entry in database
+                        var study = new StudyQueryOut
+                        {
+                            StudyInstanceUID = StudyInstanceUID,
+                            PatientID = PatientID,
+                            PatientName = PatientName,
+                            StudyDate = date.ToString()
+                        };
+                        using (var db = new LiteDatabase("./databaseFolder/database.db"))
+                        {
+                            var studies = db.GetCollection<StudyQueryOut>("studies");
+                            if (studies.FindById(StudyInstanceUID) == null)
+                                studies.Insert(study);
+                        }
+                        //
+                        
                         request.File.Save(imagePath);
                         Console.WriteLine("received and saved a file in database");
                     }
                     else Console.WriteLine("File already present in database");
-
-                    //DicomAnonymizer.SecurityProfileOptions.
-                    var profile = new DicomAnonymizer.SecurityProfile();
-                    profile.PatientName = "random";
-                    DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
-                    DicomDataset anonymizedDataset = anonymizer.Anonymize(request.Dataset);
-
-                    // DICOMANONYMYZER + DICOMDIR DATABASE
-                    DicomDirectoryTest s = new DicomDirectoryTest();
-                    
-                    //
-
-                    // get more data
-                    string PatientName = "";
-                    anonymizedDataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
-                    Console.WriteLine("patient name " + PatientName);
-                    string PatientID = "";
-                    anonymizedDataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
-
-
-                    // add entry in database
-                    var study = new StudyQueryOut
-                    {
-                        StudyInstanceUID = StudyInstanceUID,
-                        PatientID = PatientID,
-                        PatientName = PatientName,
-                        StudyDate = date
-                    };
-                    using (var db = new LiteDatabase("./databaseFolder/database.db"))
-                    {
-                        var studies = db.GetCollection<StudyQueryOut>("studies");
-                        if (studies.FindById(StudyInstanceUID) == null)
-                            studies.Insert(study);
-                    }
                 }
                 catch (Exception ec) { Console.WriteLine(ec.Message + "   " + ec.ToString()); }
-
             }
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
@@ -176,7 +172,7 @@ namespace Listener
             public string StudyInstanceUID { get; set; } = "";
             public string PatientID { get; set; } = "";
             public string PatientName { get; set; } = "";
-            public DateTime StudyDate { get; set; } = new DateTime();
+            public string StudyDate { get; set; } = "";
         }
 
         private void SendAssociationAccept(DicomAssociation association)

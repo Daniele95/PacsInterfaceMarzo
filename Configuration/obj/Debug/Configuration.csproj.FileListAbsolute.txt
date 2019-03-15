@@ -6,6 +6,7 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Conf
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\bin\Debug\Dicom.Core.pdb
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\bin\Debug\Dicom.Core.xml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\bin\Debug\LiteDB.xml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.csprojAssemblyReference.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\PopupEditServer.baml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\PopupSetThisNodeName.baml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\PopupAddServer.baml
@@ -23,4 +24,3 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Conf
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.csproj.CopyComplete
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.exe
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.pdb
-C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.csprojAssemblyReference.cache

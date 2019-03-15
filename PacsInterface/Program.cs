@@ -119,14 +119,14 @@ namespace PacsInterface
                    x.StudyInstanceUID.Equals(studyQuery.StudyInstanceUID) ||
                    x.PatientID.Equals(studyQuery.PatientID) ||
                    x.PatientName.Contains(studyQuery.PatientName) ||
-                   x.StudyDate.Equals(studyQuery.StudyDate) ||
+                   x.StudyDate.Equals(studyQuery.StudyDate.ToString()) ||
                    x.ModalitiesInStudy.Equals(studyQuery.ModalitiesInStudy)
                 );
 
                 mainWindow.queryPage.listView.Items.Clear();
-
+                
                 foreach (var result in results)
-                    mainWindow.queryPage.listView.Items.Add(result);
+                   mainWindow.queryPage.listView.Items.Add(result);
             }
         }
         void onLocalStudyClicked(ListViewItem sender)

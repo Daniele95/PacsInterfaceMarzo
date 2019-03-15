@@ -1,0 +1,20 @@
+﻿<Page x:Class="GUI2.LocalPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GUI2"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="LocalPage">
+
+    <Grid>
+        <ListView x:Name="listView" HorizontalAlignment="Left" Height="278" Margin="84,79,0,0" VerticalAlignment="Top" Width="600">
+            <ListView.View>
+                <GridView>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </Grid>
+</Page>

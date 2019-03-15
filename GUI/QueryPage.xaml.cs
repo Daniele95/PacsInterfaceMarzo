@@ -21,5 +21,10 @@ namespace GUI
                 study_ClickEvent(item);
             }
         }
+
+        private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

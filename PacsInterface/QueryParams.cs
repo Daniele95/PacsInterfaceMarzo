@@ -42,7 +42,6 @@ namespace PacsInterface
             public string PatientName { get; set; } = "";
             public string StudyDate { get; set; } = "";
             public string ModalitiesInStudy { get; set; } = "";
-            public string PatientBirthDate { get; set; } = "";
             public string StudyDescription { get; set; } = "";
 
             public StudyQueryOut() { }
@@ -81,8 +80,8 @@ namespace PacsInterface
             public string StudyInstanceUID { get; set; } = "";
             public string PatientID { get; set; } = "";
             public string PatientName { get; set; } = "";
-            public string ModalitiesInStudy { get; set; } = "";
             public DicomDateRange StudyDate { get; set; } = new DicomDateRange();
+            public string ModalitiesInStudy { get; set; } = "";
 
             public StudyQueryIn(QueryPage queryPage)
             {
