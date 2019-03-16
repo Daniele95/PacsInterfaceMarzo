@@ -1,14 +1,15 @@
 ﻿using Dicom;
 using Dicom.Network;
-using GUI2;
+using GUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace PacsInterface2
+namespace PacsInterface
 {
     class Program
     {
@@ -20,12 +21,7 @@ namespace PacsInterface2
         {
             // configure server info
             configuration = new CurrentConfiguration();
-
-            // start listening for incoming files
-            Process[] listeners = Process.GetProcessesByName("Listener");
-            if (listeners.Length != 0)
-                foreach (var listener in listeners) listener.Kill();
-            Process.Start("Listener");
+            Debug.welcome();
 
             // setup GUI and handle GUI events
             setupGUI = new SetupGUI(mainWindow);
@@ -116,7 +112,7 @@ namespace PacsInterface2
             catch (Exception) { Debug.cantReachServer(); }
 
             // arrange results in table
-                setupGUI.addSeriesToTable(seriesResponses);
+            setupGUI.addSeriesToTable(seriesResponses);
 
             Debug.addedSeriesToTable();
 
@@ -134,6 +130,8 @@ namespace PacsInterface2
 
             // prepare to receive data
             File.Delete("singleImage.txt");
+            // write file path
+            // based on uids, current date, and path chosen by user
 
             // send query
             Debug.downloading(configuration);

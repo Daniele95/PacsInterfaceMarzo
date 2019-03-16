@@ -1,4 +1,4 @@
-﻿using GUI2;
+﻿using GUI;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace PacsInterface2
+namespace PacsInterface
 {
     class SetupGUI
     {

@@ -3,39 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{ABDA8543-F5B5-4052-8723-8B0308B2816D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacsInterface", "PacsInterface\PacsInterface.csproj", "{72067730-7672-4D3E-84CF-5365B941C987}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listener", "Listener\Listener.csproj", "{DA0C556E-7F6A-4CEC-8F8B-6E1D2E3AD029}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Configuration\Configuration.csproj", "{1FA33267-4908-4FFE-AC65-B7AF8B9BF7BA}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "..\..\..\..\Lavoro\Dicom\altro\librerie\fo-dicom-development\DICOM\DICOM.Shared.shproj", "{F9539369-1AD0-43B0-A35C-B82F6755C247}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacsInterface", "PacsInterface2\PacsInterface.csproj", "{2AE902C1-CB92-4383-9DB6-A633C59CFBE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{0CB9E284-C23D-4A4A-87B1-CA685362F2CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacsInterface2", "PacsInterface2\PacsInterface2.csproj", "{2AE902C1-CB92-4383-9DB6-A633C59CFBE4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI2", "GUI2\GUI2.csproj", "{6C4C1F8A-F6F7-4F01-A73B-9B02CBF61D4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI2\GUI.csproj", "{6C4C1F8A-F6F7-4F01-A73B-9B02CBF61D4F}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\..\..\Lavoro\Dicom\altro\librerie\fo-dicom-development\DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABDA8543-F5B5-4052-8723-8B0308B2816D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABDA8543-F5B5-4052-8723-8B0308B2816D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABDA8543-F5B5-4052-8723-8B0308B2816D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABDA8543-F5B5-4052-8723-8B0308B2816D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72067730-7672-4D3E-84CF-5365B941C987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72067730-7672-4D3E-84CF-5365B941C987}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72067730-7672-4D3E-84CF-5365B941C987}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72067730-7672-4D3E-84CF-5365B941C987}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA0C556E-7F6A-4CEC-8F8B-6E1D2E3AD029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA0C556E-7F6A-4CEC-8F8B-6E1D2E3AD029}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA0C556E-7F6A-4CEC-8F8B-6E1D2E3AD029}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,10 +25,6 @@ Global
 		{1FA33267-4908-4FFE-AC65-B7AF8B9BF7BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FA33267-4908-4FFE-AC65-B7AF8B9BF7BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FA33267-4908-4FFE-AC65-B7AF8B9BF7BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CB9E284-C23D-4A4A-87B1-CA685362F2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CB9E284-C23D-4A4A-87B1-CA685362F2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CB9E284-C23D-4A4A-87B1-CA685362F2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CB9E284-C23D-4A4A-87B1-CA685362F2CF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2AE902C1-CB92-4383-9DB6-A633C59CFBE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2AE902C1-CB92-4383-9DB6-A633C59CFBE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AE902C1-CB92-4383-9DB6-A633C59CFBE4}.Release|Any CPU.ActiveCfg = Release|Any CPU

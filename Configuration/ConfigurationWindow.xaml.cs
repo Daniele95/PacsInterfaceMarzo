@@ -13,69 +13,67 @@ namespace Configuration
 {
     public class CurrentConfiguration
     {
-        public string ip { get; private set; }
-        public string port { get; private set; }
-        public string AET { get; private set; }
-        public bool saveData { get; private set; }
-        public string thisNodeAET { get; private set; }
-        public string thisNodePort { get; private set; }
+        public string ip { get; set; }
+        public string port { get; set; }
+        public string AET { get; set; }
+        public bool anonymizeData { get; set; }
+        public string thisNodeAET { get; set; }
+        public string thisNodePort { get; set; }
+        public string fileDestination { get; set; }
 
         public CurrentConfiguration()
         {
-            update();
+            var lines = File.ReadAllLines("ServerConfig.txt");
+            ip = lines[0];
+            port = lines[1];
+            AET = lines[2];
+            anonymizeData = bool.Parse(lines[3]);
+            thisNodeAET = lines[4];
+            thisNodePort = lines[5];
+            fileDestination = lines[6];
         }
+        
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
 
-        public void update()
-        {
-            ip = File.ReadAllLines("ServerConfig.txt")[0];
-            port = File.ReadAllLines("ServerConfig.txt")[1];
-            AET = File.ReadAllLines("ServerConfig.txt")[2];
-            saveData = bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]);
-            thisNodeAET = File.ReadAllLines("ServerConfig.txt")[4];
-            thisNodePort = File.ReadAllLines("ServerConfig.txt")[5];
-        }
+            try
+            {
+                stream = file.Open(System.IO.FileMode.Open, FileAccess.Read, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
 
-        public void setIp(string newIp)
-        {
-            ip = newIp;
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[0] = newIp;
-            File.WriteAllLines("ServerConfig.txt", lines);
+            //file is not locked
+            return false;
         }
-        public void setPort(string newPort)
+        public void writeDown()
         {
-            port = newPort;
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[1] = newPort;
-            File.WriteAllLines("ServerConfig.txt", lines);
-        }
-        public void setAET(string newAET)
-        {
-            AET = newAET;
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[2] = newAET;
-            File.WriteAllLines("ServerConfig.txt", lines);
-        }
-        public void setSaveData(string newSaveData)
-        {
-            saveData = bool.Parse(newSaveData);
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[3] = newSaveData;
-            File.WriteAllLines("ServerConfig.txt", lines);
-        }
-        public void setThisNodeAET(string newThisNodeAET)
-        {
-            thisNodeAET = newThisNodeAET;
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[4] = newThisNodeAET;
-            File.WriteAllLines("ServerConfig.txt", lines);
-        }
-        public void setThisNodePort(string newThisNodePort)
-        {
-            thisNodePort = newThisNodePort;
-            string[] lines = File.ReadAllLines("ServerConfig.txt");
-            lines[5] = newThisNodePort;
-            File.WriteAllLines("ServerConfig.txt", lines);
+            bool locked = true;
+            while (locked) locked = IsFileLocked(new FileInfo("ServerConfig.txt"));
+            if (!locked)
+            {
+                var lines = File.ReadAllLines("ServerConfig.txt");
+                lines[0] = ip;
+                lines[1] = port;
+                lines[2] = AET;
+                lines[3] = anonymizeData.ToString();
+                lines[4] = thisNodeAET;
+                lines[5] = thisNodePort;
+                lines[6] = fileDestination;
+                File.WriteAllLines("ServerConfig.txt", lines);
+            }
         }
 
     }
@@ -142,11 +140,11 @@ namespace Configuration
             // show current configuration
             currentServer.Text = configuration.AET + "@" +
                 configuration.ip + ":" + configuration.port;
-
             thisNodesName.Text = configuration.thisNodeAET + " " +
                 configuration.thisNodePort;
-
-            saveDataCheckbox.IsChecked = configuration.saveData;
+            anonymizeDataCheckbox.IsChecked = configuration.anonymizeData;
+            destinationBox.Text = configuration.fileDestination;
+            destinationBox.KeyDown += destinationBox_TextChanged;
             //
 
             // show list of known servers
@@ -225,8 +223,9 @@ namespace Configuration
                 else if (!portIsInt) MessageBox.Show("Port must be an integer number");
                 else
                 {
-                    configuration.setThisNodeAET(thisNodeAET);
-                    configuration.setThisNodePort(thisNodePort);
+                    configuration.thisNodeAET = thisNodeAET;
+                    configuration.thisNodePort = thisNodePort;
+                    configuration.writeDown();
                     thisNodesName.Text = thisNodeAET + " " + thisNodePort;
                 }
                 popup.Close();
@@ -280,37 +279,47 @@ namespace Configuration
 
         private void testSelectedServer(object sender, RoutedEventArgs e)
         {
-            var server = new DicomServer<DicomCEchoProvider>();
+            try
+            {
+                var server = new DicomServer<DicomCEchoProvider>();
 
-            var client = new DicomClient();
-            client.NegotiateAsyncOps();
-            bool result = true;
-            for (int i = 0; i < 10; i++)
-            {
-                var request = new DicomCEchoRequest();
-                request.OnResponseReceived = (req, response) =>
+                var client = new DicomClient();
+                client.NegotiateAsyncOps();
+                bool result = true;
+
+                for (int i = 0; i < 10; i++)
                 {
-                    if (response.Status.ToString() != "Success") result = false;
-                };
-                client.AddRequest(request);
-            }
-            if (listView.Items.Count != 0)
-            {
-                server selectedServer = listView.SelectedItem as server;
-                if (selectedServer == null) selectedServer = listView.Items[0] as server;
-                string info = "Tested connection to: " + selectedServer.AET + "@" + selectedServer.ip + ":" + selectedServer.port
-                        + Environment.NewLine;
-                try
-                {
-                    client.Send(selectedServer.ip, int.Parse(selectedServer.port), false, configuration.thisNodeAET, selectedServer.AET);
-                    if (result) MessageBox.Show(info + "Success");
-                    else MessageBox.Show(info + "Server did not respond correctly");
+                    var request = new DicomCEchoRequest();
+                    request.OnResponseReceived = (req, response) =>
+                    {
+                        if (response.Status.ToString() != "Success") result = false;
+                    };
+                    client.AddRequest(request);
                 }
-                catch (Exception ec)
+
+
+                if (listView.Items.Count != 0)
                 {
-                    MessageBox.Show(info + "Could not reach server");
+                    server selectedServer = listView.SelectedItem as server;
+                    if (selectedServer == null) selectedServer = listView.Items[0] as server;
+                    string info = "Tested connection to: " + selectedServer.AET + "@" + selectedServer.ip + ":" + selectedServer.port
+                            + Environment.NewLine;
+                    try
+                    {
+                        client.Send(selectedServer.ip, int.Parse(selectedServer.port), false, configuration.thisNodeAET, selectedServer.AET);
+                        if (result) MessageBox.Show(info + "Success");
+                        else MessageBox.Show(info + "Server did not respond correctly");
+                    }
+                    catch (Exception ec)
+                    {
+                        MessageBox.Show(info + "Could not reach server");
+                    }
                 }
+
             }
+            catch (Exception ee) { MessageBox.Show(ee.Message); }
+
+
         }
 
         private void addNewServer(object sender, RoutedEventArgs e)
@@ -381,22 +390,26 @@ namespace Configuration
                 if (ls == null) ls = listView.Items[0] as server;
                 currentServer.Text = ls.AET + "@" + ls.ip + ":" + ls.port;
 
-                configuration.setIp(ls.ip);
-                configuration.setPort(ls.port);
-                configuration.setAET(ls.AET);
+                configuration.ip = ls.ip;
+                configuration.port = ls.port;
+                configuration.AET = ls.AET;
+                configuration.writeDown();
             }
         }
 
-        private void saveDataCheckbox_Checked(object sender, RoutedEventArgs e)
+        private void anonymizeDataCheckbox_Checked(object sender, RoutedEventArgs e)
         {
-            if (listView.Items.Count != 0)
-            {
-                server ls = listView.SelectedItem as server;
-                if (ls == null) ls = listView.Items[0] as server;
-
-                configuration.setSaveData(saveDataCheckbox.IsChecked.ToString());
-            }
+            configuration.anonymizeData = bool.Parse(anonymizeDataCheckbox.IsChecked.ToString());
+            configuration.writeDown();
         }
 
+        private void destinationBox_TextChanged(object sender, RoutedEventArgs e)
+        {
+            if (configuration != null)
+            {
+                configuration.fileDestination = destinationBox.Text;
+                configuration.writeDown();
+            }
+        }
     }
 }

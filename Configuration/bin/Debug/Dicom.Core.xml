@@ -1614,6 +1614,65 @@
             <param name="x">The amount to inflate this <see cref="T:Dicom.Imaging.Mathematics.RectF"/> structure horizontally.</param>
             <param name="y">The amount to inflate this <see cref="T:Dicom.Imaging.Mathematics.RectF"/> structure vertically.</param>
         </member>
+        <member name="M:Dicom.Imaging.ImageLocalizer.CanDrawLocalizer(Dicom.Imaging.FrameGeometry,Dicom.Imaging.FrameGeometry)">
+            <summary>
+            This method performes some checks, if it is valid or allowed that the location of the sourceFrame
+            is drawn on the destinationFrame.
+            This check should be called at least once before the more computation intensive method CalcualteLocalizer
+            is called.
+            </summary>
+            <param name="sourceFrame"></param>
+            <param name="destinationFrame"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dicom.Imaging.ImageLocalizer.CalcualteProjectionLocalizer(Dicom.DicomDataset,Dicom.DicomDataset,System.Collections.Generic.List{Dicom.Imaging.Mathematics.Point2}@)">
+             <summary>
+             This method calculates the localizer rectangle of the sourceFrame that can be drawn on the destinationFrame.
+             You should call the method CanDrawLocalizer prior to check if localizer calculation is valid on the two frames.
+             This method will return the 4 points of a rectangle, although most image sets are orthogonal, resulting in the rectangle
+             being presented as a straight line on the scout image. Since the source image is projected on the destination image
+             there might me a result even if the two images do not intersect
+            
+             </summary>
+             <param name="sourceFrame">The dataset of the frame, that is viewed by the user</param>
+             <param name="destinationFrame">The dataset of the scout frame, where the localizer line should be drawn on</param>
+             <param name="localizerPoints">This contains the points of the localizer rectangle in terms of pixels on destinationFrame</param>        
+             <returns></returns>
+        </member>
+        <member name="M:Dicom.Imaging.ImageLocalizer.GetPositionOrientationSpacingAndSize(Dicom.DicomDataset,Dicom.Imaging.Mathematics.Vector3D@,Dicom.Imaging.Mathematics.Vector3D@,Dicom.Imaging.Mathematics.Vector3D@,Dicom.Imaging.Mathematics.Point3D@,System.Int32@,System.Int32@,System.Double@,System.Double@,System.Double@,System.Double@)">
+             <summary>
+             This method gets the values for the image position, orientation, spacing, and size
+             from ImageOrientationPatient, ImagePositionPatient, PixelSpacing, Rows, and Columns.
+             The normal direction cosines are derived from row and column direction cosines.
+            
+             </summary>
+             <param name="dicomDataset">The dataset of the frame, that is viewed by the user</param>
+             <param name="rowDir">The row direction cosine</param>
+             <param name="colDir">The column direction cosine</param>
+             <param name="normalDir">The normal direction cosine</param>
+             <param name="pos">The starting pixel position (top lefthand corner)</param>
+             <param name="rows">The number of rows in the frame</param>
+             <param name="cols">The number of columns in the frame</param>
+             <param name="row_spacing">The Row spacing of the frame, derived from the first entry of the PixelSpacing tag</param>
+             <param name="col_spacing">The Column spacing of the frame, derived from the second entry of the PixelSpacing tag</param>
+             <param name="row_length">The row length of the frame, derived from multiplying the columns by the row spacing</param>
+             <param name="col_length">The column length of the frame, derived from multiplying the rows by the column spacing</param>
+             <returns></returns>
+        </member>
+        <member name="M:Dicom.Imaging.ImageLocalizer.CalcualteIntersectionLocalizer(Dicom.Imaging.FrameGeometry,Dicom.Imaging.FrameGeometry,Dicom.Imaging.Mathematics.Point2@,Dicom.Imaging.Mathematics.Point2@)">
+             <summary>
+             This method calculates the localizer line of the sourceFrame that can be drawn on the destinationFrame.
+             You should call the method CanDrawLocalizer prior to check if localizer calculation is valid on the two frames.
+            
+             This method returns the line of common pixels where the two images intersect.
+             If the two images intersect, then it returns <code>true</code> and the out parameters are filled with values. Otherwise the method returns <code>false</code>
+             </summary>
+             <param name="sourceFrame">The geometry of the frame, that is viewed by the user</param>
+             <param name="destinationFrame">The geometry of the scout frame, where the localizer line should be drawn on</param>
+             <param name="startPoint">If the frames intersect, then this contains the start point of the localizer line in terms of pixels on destinationFrame</param>
+             <param name="endPoint">If the frames intersect, then this contains the end point of the localizer lin in terms of pixels on destinationFrame</param>
+             <returns></returns>
+        </member>
         <member name="T:Dicom.Imaging.PhotometricInterpretation">
             <summary>
             Photometric Interpretation.
@@ -2202,8 +2261,15 @@
         <member name="M:Dicom.Imaging.Render.IPixelData.GetMinMax(System.Int32)">
             <summary>
             Return the minimum and maximum pixel values from pixel data.
+            The padding value is taken into account.
             </summary>
             <param name="padding">Padding value to ignore in min-max determination.</param>
+            <returns>Range of calculated minimum and maximum values.</returns>
+        </member>
+        <member name="M:Dicom.Imaging.Render.IPixelData.GetMinMax">
+            <summary>
+            Return the minimum and maximum pixel values from pixel data.
+            </summary>
             <returns>Range of calculated minimum and maximum values.</returns>
         </member>
         <member name="M:Dicom.Imaging.Render.IPixelData.GetPixel(System.Int32,System.Int32)">
@@ -2296,6 +2362,9 @@
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU8.GetMinMax(System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU8.GetMinMax">
+            <inheritdoc />
+        </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU8.GetPixel(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
@@ -2366,6 +2435,9 @@
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS16.GetMinMax(System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS16.GetMinMax">
+            <inheritdoc />
+        </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS16.GetPixel(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
@@ -2415,6 +2487,9 @@
             </summary>
         </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU16.GetMinMax(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU16.GetMinMax">
             <inheritdoc />
         </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU16.GetPixel(System.Int32,System.Int32)">
@@ -2468,6 +2543,9 @@
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS32.GetMinMax(System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS32.GetMinMax">
+            <inheritdoc />
+        </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataS32.GetPixel(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
@@ -2519,6 +2597,9 @@
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU32.GetMinMax(System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU32.GetMinMax">
+            <inheritdoc />
+        </member>
         <member name="M:Dicom.Imaging.Render.GrayscalePixelDataU32.GetPixel(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
@@ -2567,6 +2648,9 @@
             </summary>
         </member>
         <member name="M:Dicom.Imaging.Render.ColorPixelData24.GetMinMax(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Dicom.Imaging.Render.ColorPixelData24.GetMinMax">
             <inheritdoc />
         </member>
         <member name="M:Dicom.Imaging.Render.ColorPixelData24.GetPixel(System.Int32,System.Int32)">
@@ -2752,7 +2836,7 @@
             <param name="dstFileName">Name of the destination file.</param>
             <param name="overwrite">True if <paramref name="dstFileName"/> should be overwritten if it already exists, false otherwise.</param>
         </member>
-        <member name="M:Dicom.IO.DesktopFileReference.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.DesktopFileReference.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a sub-range of the bytes in the file.
             </summary>
@@ -2882,7 +2966,7 @@
             Gets or sets the bulk data. Throws an InvalidOperationException if the Data has not been set.
             </summary>
         </member>
-        <member name="M:Dicom.IO.Buffer.BulkDataUriByteBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.BulkDataUriByteBuffer.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a subset of the data. Throws an InvalidOperationException if the Data has not been set.
             </summary>
@@ -3046,7 +3130,7 @@
         <member name="P:Dicom.IO.Buffer.CompositeByteBuffer.Data">
             <inheritdoc />
         </member>
-        <member name="M:Dicom.IO.Buffer.CompositeByteBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.CompositeByteBuffer.GetByteRange(System.Int64,System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:Dicom.IO.Buffer.EndianByteBuffer">
@@ -3086,7 +3170,7 @@
         <member name="P:Dicom.IO.Buffer.EndianByteBuffer.Data">
             <inheritdoc />
         </member>
-        <member name="M:Dicom.IO.Buffer.EndianByteBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.EndianByteBuffer.GetByteRange(System.Int64,System.Int32)">
             <inheritdoc />
         </member>
         <member name="M:Dicom.IO.Buffer.EndianByteBuffer.Create(Dicom.IO.Buffer.IByteBuffer,Dicom.IO.Endian,System.Int32)">
@@ -3133,7 +3217,7 @@
             Gets the buffer data, which is equal to the underlying buffer data plus a padding byte at the end.
             </summary>
         </member>
-        <member name="M:Dicom.IO.Buffer.EvenLengthBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.EvenLengthBuffer.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a subset of the data.
             </summary>
@@ -3182,7 +3266,7 @@
             Gets the data.
             </summary>
         </member>
-        <member name="M:Dicom.IO.Buffer.IByteBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.IByteBuffer.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a subset of the data.
             </summary>
@@ -3216,7 +3300,7 @@
             Gets the data.
             </summary>
         </member>
-        <member name="M:Dicom.IO.Buffer.TempFileBuffer.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.Buffer.TempFileBuffer.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a subset of the data.
             </summary>
@@ -3552,7 +3636,7 @@
             File byte source for reading.
             </summary>
         </member>
-        <member name="M:Dicom.IO.FileByteSource.#ctor(Dicom.IO.IFileReference)">
+        <member name="M:Dicom.IO.FileByteSource.#ctor(Dicom.IO.IFileReference,Dicom.FileReadOption)">
             <summary>
             Initializes an instance of <see cref="T:Dicom.IO.FileByteSource"/>.
             </summary>
@@ -4100,7 +4184,7 @@
             <param name="dstFileName">Full name of the moved file.</param>
             <param name="overwrite">True if already existing file should be overwritten, false otherwise.</param>
         </member>
-        <member name="M:Dicom.IO.IFileReference.GetByteRange(System.Int32,System.Int32)">
+        <member name="M:Dicom.IO.IFileReference.GetByteRange(System.Int64,System.Int32)">
             <summary>
             Gets a sub-range of the bytes in the file.
             </summary>
@@ -4386,7 +4470,7 @@
             Stream byte source for reading.
             </summary>
         </member>
-        <member name="M:Dicom.IO.StreamByteSource.#ctor(System.IO.Stream)">
+        <member name="M:Dicom.IO.StreamByteSource.#ctor(System.IO.Stream,Dicom.FileReadOption)">
             <summary>
             Initializes a new instance of <see cref="T:Dicom.IO.StreamByteSource"/>.
             </summary>
@@ -5337,7 +5421,7 @@
         <member name="M:Dicom.Network.DesktopNetworkManager.CreateNetworkListenerImpl(System.String,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Dicom.Network.DesktopNetworkManager.CreateNetworkStreamImpl(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Dicom.Network.DesktopNetworkManager.CreateNetworkStreamImpl(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32)">
             <inheritdoc />
         </member>
         <member name="M:Dicom.Network.DesktopNetworkManager.IsSocketExceptionImpl(System.Exception,System.Int32@,System.String@)">
@@ -5351,7 +5435,7 @@
             .NET implementation of <see cref="T:Dicom.Network.INetworkStream"/>.
             </summary>
         </member>
-        <member name="M:Dicom.Network.DesktopNetworkStream.#ctor(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Dicom.Network.DesktopNetworkStream.#ctor(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32)">
             <summary>
             Initializes a client instance of <see cref="T:Dicom.Network.DesktopNetworkStream"/>.
             </summary>
@@ -5361,15 +5445,21 @@
             <param name="noDelay">No delay?</param>
             <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         </member>
-        <member name="M:Dicom.Network.DesktopNetworkStream.#ctor(System.Net.Sockets.TcpClient,System.Security.Cryptography.X509Certificates.X509Certificate)">
+        <member name="M:Dicom.Network.DesktopNetworkStream.#ctor(System.Net.Sockets.TcpClient,System.Security.Cryptography.X509Certificates.X509Certificate,System.Boolean)">
             <summary>
             Initializes a server instance of <see cref="T:Dicom.Network.DesktopNetworkStream"/>.
             </summary>
             <param name="tcpClient">TCP client.</param>
             <param name="certificate">Certificate for authenticated connection.</param>
-            <remarks>Ownership of <paramref name="tcpClient"/> remains with the caller, including responsibility for
-            disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="T:Dicom.Network.DesktopNetworkStream"/>
-            is initialized with this server-side constructor.</remarks>
+            <param name="ownsTcpClient">dispose tcpClient on Dispose</param>
+            <remarks>
+            Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
+            
+            if <paramref name="ownsTcpClient"/> is false, <paramref name="tcpClient"/> must be disposed by caller.
+            this is default so that compatible with older versions.
+            
+            if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
+            </remarks>
         </member>
         <member name="M:Dicom.Network.DesktopNetworkStream.Finalize">
             <summary>
@@ -5621,6 +5711,14 @@
             Initializes an instance of the <see cref="T:Dicom.Network.DicomCFindRequest"/> class.
             </summary>
             <param name="affectedSopClassUid">Affected SOP Class UID.</param>
+            <param name="priority">Command priority.</param>
+        </member>
+        <member name="M:Dicom.Network.DicomCFindRequest.#ctor(Dicom.DicomUID,Dicom.Network.DicomQueryRetrieveLevel,Dicom.Network.DicomPriority)">
+            <summary>
+            Initializes an instance of the <see cref="T:Dicom.Network.DicomCFindRequest"/> class.
+            </summary>
+            <param name="affectedSopClassUid">Affected SOP Class UID.</param>
+            <param name="level">Query/Retrieve level.</param>
             <param name="priority">Command priority.</param>
         </member>
         <member name="P:Dicom.Network.DicomCFindRequest.Level">
@@ -5953,6 +6051,16 @@
             <summary>
             Asynchronously abort DICOM service connection.
             </summary>
+        </member>
+        <member name="M:Dicom.Network.DicomClient.DoSendAsync(Dicom.Network.INetworkStream,Dicom.Network.DicomAssociation,System.Int32,System.Boolean)">
+            <summary>
+            Requests an association, sends all the requests from the queue and sends an association release request.
+            </summary>
+            <param name="stream">The stream that is used to send the messages</param>
+            <param name="association"></param>
+            <param name="millisecondsTimeout">Timeout for Responses on Association Request or Accociation Release</param>
+            <param name="forceDisconnect">if true, then the network stream is forced to be closed after the association has been released.</param>
+            <returns></returns>
         </member>
         <member name="M:Dicom.Network.DicomClient.DicomServiceUser.OnReceiveAssociationAccept(Dicom.Network.DicomAssociation)">
             <inheritdoc />
@@ -7394,12 +7502,28 @@
             <param name="logger">Logger, if null default logger will be applied.</param>
             <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
         </member>
+        <member name="M:Dicom.Network.DicomServer.GetInstance(System.Int32,System.String)">
+            <summary>
+            Gets DICOM server instance registered to <paramref name="port"/>.
+            </summary>
+            <param name="port">Port number for which DICOM server is requested.</param>
+            <param name="ipAddress">IP Address for which the service listener is requested.</param>
+            <returns>Registered DICOM server for <paramref name="port"/>.</returns>
+        </member>
         <member name="M:Dicom.Network.DicomServer.GetInstance(System.Int32)">
             <summary>
             Gets DICOM server instance registered to <paramref name="port"/>.
             </summary>
             <param name="port">Port number for which DICOM server is requested.</param>
             <returns>Registered DICOM server for <paramref name="port"/>.</returns>
+        </member>
+        <member name="M:Dicom.Network.DicomServer.GetListener(System.Int32,System.String)">
+            <summary>
+            Gets service listener for the DICOM server instance registered to <paramref name="port"/>.
+            </summary>
+            <param name="port">Port number for which the service listener is requested.</param>
+            <param name="ipAddress">IP Address for which the service listener is requested.</param>
+            <returns>Service listener for the <paramref name="port"/> DICOM server.</returns>
         </member>
         <member name="M:Dicom.Network.DicomServer.GetListener(System.Int32)">
             <summary>
@@ -7415,6 +7539,14 @@
             <param name="port">Port number for which listening status is requested.</param>
             <returns>True if DICOM server on <paramref name="port"/> is registered and listening, false otherwise.</returns>
         </member>
+        <member name="M:Dicom.Network.DicomServer.IsListening(System.Int32,System.String)">
+            <summary>
+            Gets an indicator of whether a DICOM server is registered and listening on the specified <paramref name="port"/>.
+            </summary>
+            <param name="port">Port number for which listening status is requested.</param>
+            <param name="ipAddress">IP Address for which listening status is requested.</param>
+            <returns>True if DICOM server on <paramref name="port"/> is registered and listening, false otherwise.</returns>
+        </member>
         <member name="M:Dicom.Network.DicomServer.Unregister(Dicom.Network.IDicomServer)">
             <summary>
             Removes a DICOM server from the list of registered servers.
@@ -7422,11 +7554,12 @@
             <param name="server">Server to remove.</param>
             <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
         </member>
-        <member name="M:Dicom.Network.DicomServer.IsMatching(System.Int32)">
+        <member name="M:Dicom.Network.DicomServer.IsMatching(System.Int32,System.String)">
             <summary>
             Gets the function to be used in LINQ queries when searching for server matches.
             </summary>
             <param name="port">Matching port.</param>
+            <param name="ipAddress">Matching IP Address</param>
             <returns>Function to be used in LINQ queries when searching for server matches.</returns>
         </member>
         <member name="T:Dicom.Network.PDUBytesHandler">
@@ -7640,6 +7773,8 @@
             <summary>
             Gets or sets whether to ignore transfer syntax change when DICOM dataset cannot be transcoded from
             its own transfer syntax to the negotiated Accepted Transfer Syntax.
+            If set to true then the transcoding is ignored and the DICOM dataset is sent as is, if set to false
+            then the pixeldata is removed from the DICOM dataset.
             </summary>
         </member>
         <member name="T:Dicom.Network.DicomState">
@@ -8313,7 +8448,7 @@
             <param name="port">Network port to listen to.</param>
             <returns>Network listener implementation.</returns>
         </member>
-        <member name="M:Dicom.Network.NetworkManager.CreateNetworkStream(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Dicom.Network.NetworkManager.CreateNetworkStream(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32)">
             <summary>
             Create a network stream object.
             </summary>
@@ -8322,6 +8457,7 @@
             <param name="useTls">Use TLS layer?</param>
             <param name="noDelay">No delay?</param>
             <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
+            <param name="millisecondsTimeout">a timeout in milliseconds for creating a network stream</param>
             <returns>Network stream implementation.</returns>
         </member>
         <member name="M:Dicom.Network.NetworkManager.IsSocketException(System.Exception,System.Int32@,System.String@)">
@@ -8348,7 +8484,7 @@
             <param name="port">Network port to listen to.</param>
             <returns>Network listener implementation.</returns>
         </member>
-        <member name="M:Dicom.Network.NetworkManager.CreateNetworkStreamImpl(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Dicom.Network.NetworkManager.CreateNetworkStreamImpl(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32)">
             <summary>
             Platform-specific implementation to create a network stream object.
             </summary>
@@ -8357,6 +8493,7 @@
             <param name="useTls">Use TLS layer?</param>
             <param name="noDelay">No delay?</param>
             <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
+            <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
             <returns>Network stream implementation.</returns>
         </member>
         <member name="M:Dicom.Network.NetworkManager.IsSocketExceptionImpl(System.Exception,System.Int32@,System.String@)">
@@ -9858,9 +9995,10 @@
             <param name="item"></param>
             <returns>The data type if found, otherwise null</returns>
         </member>
-        <member name="M:Dicom.DicomAnonymizer.ReplaceString(Dicom.DicomDataset,Dicom.DicomItem,System.String)">
+        <member name="M:Dicom.DicomAnonymizer.ReplaceString(Dicom.DicomDataset,System.Text.Encoding,Dicom.DicomItem,System.String)">
             <string>Replaces the content of an item.</string>
             <param name="dataset">Reference to the dataset</param>
+            <param name="encoding">Identifies the character set should be used for encoding.</param>
             <param name="item">DICOM item for which the string value should be replaced.</param>
             <param name="newString">The replacement string.</param>
         </member>
@@ -10725,6 +10863,32 @@
             Gets or sets the sequence depth (zero-based) associated with the parse state.
             </summary>
         </member>
+        <member name="T:Dicom.FileReadOption">
+            <summary>
+            Option for reading a DICOM file from a stream
+            </summary>
+        </member>
+        <member name="F:Dicom.FileReadOption.Default">
+            <summary>
+            Default behaviour. 
+            </summary>
+        </member>
+        <member name="F:Dicom.FileReadOption.ReadLargeOnDemand">
+            <summary>
+            Reads only small tags, but keeps the stream to read the large tags on demand.
+            The stream has to stay open.
+            </summary>
+        </member>
+        <member name="F:Dicom.FileReadOption.SkipLargeTags">
+            <summary>
+            Large tags are not read. The stream can be closed.
+            </summary>
+        </member>
+        <member name="F:Dicom.FileReadOption.ReadAll">
+            <summary>
+            Read all tags so that the stream can be closed.
+            </summary>
+        </member>
         <member name="T:Dicom.DicomFile">
             <summary>
             Representation of one DICOM file.
@@ -10785,16 +10949,17 @@
             <param name="options">Options to apply during writing.</param>
             <returns>Awaitable task.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.Open(System.String)">
+        <member name="M:Dicom.DicomFile.Open(System.String,Dicom.FileReadOption)">
             <summary>
             Reads the specified filename and returns a DicomFile object.  Note that the values for large
             DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
             are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
             </summary>
             <param name="fileName">The filename of the DICOM file</param>
+            <param name="readOption">An option how to deal with large dicom tags like pixel data.</param>
             <returns>DicomFile instance</returns>
         </member>
-        <member name="M:Dicom.DicomFile.Open(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.DicomFile.Open(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Reads the specified filename and returns a DicomFile object.  Note that the values for large
             DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
@@ -10805,32 +10970,35 @@
             <param name="stop">Stop criterion in dataset.</param>
             <returns>DicomFile instance</returns>
         </member>
-        <member name="M:Dicom.DicomFile.Open(System.IO.Stream)">
+        <member name="M:Dicom.DicomFile.Open(System.IO.Stream,Dicom.FileReadOption)">
             <summary>
             Read a DICOM file from stream.
             </summary>
             <param name="stream">Stream to read.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns>Read <see cref="T:Dicom.DicomFile"/>.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.Open(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.DicomFile.Open(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Read a DICOM file from stream.
             </summary>
             <param name="stream">Stream to read.</param>
             <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tag like pixel data</param>
             <returns>Read <see cref="T:Dicom.DicomFile"/>.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.OpenAsync(System.String)">
+        <member name="M:Dicom.DicomFile.OpenAsync(System.String,Dicom.FileReadOption)">
             <summary>
             Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
             DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
             are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
             </summary>
             <param name="fileName">The filename of the DICOM file</param>
+            <param name="readOption">The option how to deal with large dicom tags like pixel data.</param>
             <returns>Awaitable <see cref="T:Dicom.DicomFile"/> instance.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.OpenAsync(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.DicomFile.OpenAsync(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
             DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
@@ -10841,20 +11009,22 @@
             <param name="stop">Stop criterion in dataset.</param>
             <returns>Awaitable <see cref="T:Dicom.DicomFile"/> instance.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.OpenAsync(System.IO.Stream)">
+        <member name="M:Dicom.DicomFile.OpenAsync(System.IO.Stream,Dicom.FileReadOption)">
             <summary>
             Asynchronously read a DICOM file from stream.
             </summary>
             <param name="stream">Stream to read.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns>Awaitable <see cref="T:Dicom.DicomFile"/> instance.</returns>
         </member>
-        <member name="M:Dicom.DicomFile.OpenAsync(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.DicomFile.OpenAsync(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Asynchronously read a DICOM file from stream.
             </summary>
             <param name="stream">Stream to read.</param>
             <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns>Awaitable <see cref="T:Dicom.DicomFile"/> instance.</returns>
         </member>
         <member name="M:Dicom.DicomFile.HasValidHeader(System.String)">
@@ -10872,7 +11042,7 @@
             A string that represents the current object.
             </returns>
         </member>
-        <member name="M:Dicom.DicomFile.Open(Dicom.IO.IFileReference,System.Text.Encoding)">
+        <member name="M:Dicom.DicomFile.Open(Dicom.IO.IFileReference,System.Text.Encoding,Dicom.FileReadOption)">
             <summary>
             Reads the specified file and returns a DicomFile object.  Note that the values for large
             DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
@@ -24460,6 +24630,41 @@
             <remarks>If transfer syntax object is built on-the-fly, value representation is set to Explicit, encapsulation is set to <code>true</code>
             and endianness is set to <see cref="F:Dicom.IO.Endian.Little">Little Endian</see>.</remarks>
         </member>
+        <member name="M:Dicom.DicomTransferSyntax.Register(Dicom.DicomUID)">
+            <summary>
+            register transfer syntax into internal dictionary, assuming Little Endian and Explicit VR.
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dicom.DicomTransferSyntax.Register(Dicom.DicomUID,Dicom.IO.Endian,System.Boolean,System.Boolean)">
+            <summary>
+            register transfer syntax into internal dictionary.
+            </summary>
+            <param name="uid"></param>
+            <param name="endian"></param>
+            <param name="isExplicitVR"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dicom.DicomTransferSyntax.Unregister(Dicom.DicomUID)">
+            <summary>
+            unregister transfer syntax from internal dictionary.
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dicom.DicomTransferSyntax.Unregister(Dicom.DicomTransferSyntax)">
+            <summary>
+            unregister transfer syntax from internal dictionary.
+            </summary>
+            <param name="ts"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dicom.DicomTransferSyntax.Query(Dicom.DicomUID)">
+            <summary>
+            Query DicomTransferSyntax by UID. returns null if not found.
+            </summary>
+        </member>
         <member name="T:Dicom.RemoveElementDicomTransformRule">
             <summary>
             Remove an element from a DICOM dataset.
@@ -29217,7 +29422,7 @@
         </member>
         <member name="M:Dicom.DicomUIDGenerator.Generate(Dicom.DicomUID)">
             <summary>
-            If <paramref name="sourceUid"/> is known, return associated destination UID, otherwise generate and return 
+            If <paramref name="sourceUid"/> is known, return associated destination UID, otherwise generate and return
             a new destination UID for the specified <paramref name="sourceUid"/>.
             </summary>
             <param name="sourceUid">Source UID.</param>
@@ -29240,6 +29445,12 @@
             Generate a UUID-derived UID, according to http://medical.nema.org/medical/dicom/current/output/html/part05.html#sect_B.2
             </summary>
             <returns>A new UID with 2.25 prefix.</returns>
+        </member>
+        <member name="M:Dicom.DicomUIDGenerator.ConvertGuidToUuidInteger(System.Guid@)">
+            <summary>
+            Converts a .NET Guid to a UUID in OID format.
+            </summary>
+            <remarks>Method is internal to support access to unit tests.</remarks>
         </member>
         <member name="T:Dicom.DicomVR">
             <summary>DICOM Value Representation</summary>
@@ -29500,6 +29711,11 @@
             Gets whether or not this type is classified as a default manager.
             </summary>
         </member>
+        <member name="T:Dicom.Media.DicomDirectoryEntry">
+            <summary>
+            Class that holds the Record entries of an entry across the different levels 
+            </summary>
+        </member>
         <member name="T:Dicom.Media.DicomDirectory">
             <summary>
             Class for managing DICOM directory objects.
@@ -29550,13 +29766,14 @@
             <param name="fileName">File name.</param>
             <returns><see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
-        <member name="M:Dicom.Media.DicomDirectory.Open(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.Media.DicomDirectory.Open(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Read DICOM Directory.
             </summary>
             <param name="fileName">File name.</param>
             <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns><see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
         <member name="M:Dicom.Media.DicomDirectory.Open(System.IO.Stream)">
@@ -29566,13 +29783,14 @@
             <param name="stream">Stream to read.</param>
             <returns><see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
-        <member name="M:Dicom.Media.DicomDirectory.Open(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.Media.DicomDirectory.Open(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Read DICOM Directory from stream.
             </summary>
             <param name="stream">Stream to read.</param>
             <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns><see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
         <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.String)">
@@ -29582,13 +29800,14 @@
             <param name="fileName">File name.</param>
             <returns>Awaitable <see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
-        <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.String,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Asynchronously read DICOM Directory.
             </summary>
             <param name="fileName">File name.</param>
             <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns>Awaitable <see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
         <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.IO.Stream)">
@@ -29598,13 +29817,14 @@
             <param name="stream">Stream to read.</param>
             <returns>Awaitable <see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
-        <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean})">
+        <member name="M:Dicom.Media.DicomDirectory.OpenAsync(System.IO.Stream,System.Text.Encoding,System.Func{Dicom.ParseState,System.Boolean},Dicom.FileReadOption)">
             <summary>
             Asynchronously read DICOM Directory from stream.
             </summary>
             <param name="stream">Stream to read.</param>
             <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
             <param name="stop">Stop criterion in dataset.</param>
+            <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
             <returns>Awaitable <see cref="T:Dicom.Media.DicomDirectory"/> instance.</returns>
         </member>
         <member name="M:Dicom.Media.DicomDirectory.OnSave">

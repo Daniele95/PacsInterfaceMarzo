@@ -1,10 +1,8 @@
-﻿using GUI2;
+﻿using GUI;
 using System;
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Threading;
 
-namespace PacsInterface2
+namespace PacsInterface
 {
     class EntryPoint
     {

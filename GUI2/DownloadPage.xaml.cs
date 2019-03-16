@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace GUI2
+namespace GUI
 {
     public partial class DownloadPage : Page
     {

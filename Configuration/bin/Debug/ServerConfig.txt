@@ -1,6 +1,7 @@
-dicomserver.co.uk
-104
-ANY
+localhost
+11118
+MIOSERVER
 True
 ANATOMAGETABLE
-11112
+104
+C:/Dico

@@ -54,8 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CStoreSCP.cs" />
-    <Compile Include="DicomDirectoryTest.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

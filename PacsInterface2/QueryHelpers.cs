@@ -1,33 +1,102 @@
 ﻿using Dicom;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 
-namespace PacsInterface2
+namespace PacsInterface
 {
     public class CurrentConfiguration
     {
         public string ip { get; private set; }
         public int port { get; private set; }
         public string AET { get; private set; }
-        public bool saveData { get; private set; }
+        public bool anonymizeData { get; private set; }
         public string thisNodeAET { get; private set; }
         public int thisNodePort { get; private set; }
+        public string fileDestination { get; private set; }
 
         public CurrentConfiguration()
         {
             update();
+            restartListener();
+            startConfigurationWatcher();
         }
 
         public void update()
         {
-            ip = File.ReadAllLines("ServerConfig.txt")[0];
-            port = int.Parse(File.ReadAllLines("ServerConfig.txt")[1]);
-            AET = File.ReadAllLines("ServerConfig.txt")[2];
-            saveData = bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]);
-            thisNodeAET = File.ReadAllLines("ServerConfig.txt")[4];
-            thisNodePort = int.Parse(File.ReadAllLines("ServerConfig.txt")[5]);
+            bool locked = true;
+            while (locked) locked = IsFileLocked(new FileInfo("ServerConfig.txt"));
+            if (!locked)
+            {
+                var lines = File.ReadAllLines("ServerConfig.txt");
+                var file = File.OpenRead("ServerConfig.txt");
+                ip = lines[0];
+                port = int.Parse(lines[1]);
+                AET = lines[2];
+                anonymizeData = bool.Parse(lines[3]);
+                thisNodeAET = lines[4];
+                thisNodePort = int.Parse(lines[5]);
+                fileDestination = lines[6];
+                file.Close();
+            }
+        }
+        void restartListener()
+        {
+            Process[] listeners = Process.GetProcessesByName("Listener");
+            if (listeners.Length != 0) foreach (var listener in listeners) listener.Kill();
+            var newListener = new Process
+            {
+                StartInfo = {
+                    FileName = "Listener",
+                    Arguments = thisNodePort.ToString()
+                }
+            };
+            newListener.Start();
+        }
+        void startConfigurationWatcher()
+        {
+            FileSystemWatcher watcher = new FileSystemWatcher
+            {
+                Path = Path.GetDirectoryName("./"),
+                Filter = Path.GetFileName("ServerConfig.txt"),
+                NotifyFilter = NotifyFilters.LastWrite,
+                EnableRaisingEvents = true
+            };
+            watcher.Changed += new FileSystemEventHandler((o, e) =>
+            {
+                int oldPort = thisNodePort;
+                bool oldAnonymizeData = anonymizeData;
+                update();
+                if (thisNodePort != oldPort || anonymizeData != oldAnonymizeData) restartListener();
+
+            });
+        }
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
         }
 
     }
@@ -64,7 +133,8 @@ namespace PacsInterface2
                     {
                         foreach (var modality in modalities)
                             value = value + modality + ", ";
-                        value = value.Substring(0, value.Length - 2);
+                        if(value.Length>0)
+                            value = value.Substring(0, value.Length - 2);
                     }
                 }
                 else dataset.TryGetSingleValue(studyQueryParameter.getTag(), out value);
@@ -130,6 +200,10 @@ namespace PacsInterface2
 
     public class Debug
     {
+        internal static void welcome()
+        {
+            Console.WriteLine("Welcome to the Pacs Interface of the Anatomage Table!");
+        }
         internal static void gotNumberOfResults(int count)
         {
             Console.WriteLine("got " + count.ToString() + " studies" + Environment.NewLine);

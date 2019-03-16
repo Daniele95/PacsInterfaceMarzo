@@ -1,12 +1,6 @@
 ﻿using Dicom;
-using Dicom.Imaging;
-using Dicom.Log;
-using Dicom.Media;
 using Dicom.Network;
-using LiteDB;
 using System;
-using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,166 +8,33 @@ namespace Listener
 {
     public class CStoreSCP : DicomService, IDicomServiceProvider, IDicomCStoreProvider, IDicomCEchoProvider
     {
+        // accepted transfer syntaxes
         private static DicomTransferSyntax[] AcceptedTransferSyntaxes = new DicomTransferSyntax[]
-                                                                            {
-                                                                                    DicomTransferSyntax
-                                                                                        .ExplicitVRLittleEndian,
-                                                                                    DicomTransferSyntax
-                                                                                        .ExplicitVRBigEndian,
-                                                                                    DicomTransferSyntax
-                                                                                        .ImplicitVRLittleEndian
-                                                                            };
-
-        private static DicomTransferSyntax[] AcceptedImageTransferSyntaxes = new DicomTransferSyntax[]
-                                                                                 {
-                                                                                         // Lossless
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGLSLossless,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEG2000Lossless,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGProcess14SV1,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGProcess14,
-                                                                                         DicomTransferSyntax
-                                                                                             .RLELossless,
-
-                                                                                         // Lossy
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGLSNearLossless,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEG2000Lossy,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGProcess1,
-                                                                                         DicomTransferSyntax
-                                                                                             .JPEGProcess2_4,
-
-                                                                                         // Uncompressed
-                                                                                         DicomTransferSyntax
-                                                                                             .ExplicitVRLittleEndian,
-                                                                                         DicomTransferSyntax
-                                                                                             .ExplicitVRBigEndian,
-                                                                                         DicomTransferSyntax
-                                                                                             .ImplicitVRLittleEndian
-                                                                                 };
-
-        public CStoreSCP(INetworkStream stream, Encoding fallbackEncoding, Dicom.Log.Logger log)
-            : base(stream, fallbackEncoding, log)
         {
+            DicomTransferSyntax.ExplicitVRLittleEndian,
+            DicomTransferSyntax.ExplicitVRBigEndian,
+            DicomTransferSyntax.ImplicitVRLittleEndian
+        };
 
-        }
-
-
+        // on association request
         public void OnReceiveAssociationRequest(DicomAssociation association)
         {
             Console.WriteLine("received association request " + association.ToString());
             foreach (var pc in association.PresentationContexts)
-            {
-                //    if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-                //    else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
-
                 pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-
-            }
-
             SendAssociationAccept(association);
-
         }
+
+        // on cStore request
         public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
         {
-            Console.WriteLine("received cstore request " + request.ToString());
-
-            if (File.Exists("singleImage.txt"))
-            {
-                Console.WriteLine("now save on ./images/file.jpg");
-
-                File.Delete("./images/file.dcm");
-                var dicomFile = new DicomFile(request.File.Dataset);
-                //  dicomFile.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
-                dicomFile.Save("./images/file.dcm");
-                var image = new DicomImage("./images/file.dcm");
-                File.Delete("./images/file.jpg");
-                image.RenderImage().AsClonedBitmap().Save("./images/file.jpg");
-            }
-            else // else save image to database
-            {
-                Console.WriteLine("now save in database" + Environment.NewLine);
-                try
-                {
-                    // get parameters
-                    string dateString = "";
-                    request.Dataset.TryGetSingleValue(DicomTag.StudyDate, out dateString);
-                    DateTime date = DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-                    string StudyInstanceUID = "";
-                    request.Dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
-                    string SeriesInstanceUID = "";
-                    request.Dataset.TryGetSingleValue(DicomTag.SeriesInstanceUID, out SeriesInstanceUID);
-                    string SOPInstanceUID = "";
-                    request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
-
-                    // save in database folder
-                    var pathInDatabase = Path.GetFullPath("./databaseFolder");
-                    // take last two numbers, for examples seriesinstanceuid ends with .150.0
-                    var seriesUIDs = SeriesInstanceUID.Split('.');
-                    string seriesUID = seriesUIDs[seriesUIDs.Length - 2] +"."+ seriesUIDs[seriesUIDs.Length-1];
-                    var sopUIDs = SOPInstanceUID.Split('.');
-                    string sopUID = sopUIDs[sopUIDs.Length - 2] +"." +sopUIDs[sopUIDs.Length-1];
-
-                    pathInDatabase = Path.Combine(pathInDatabase, date.Year.ToString(), date.Month.ToString(), date.Day.ToString(),
-                        StudyInstanceUID, seriesUID);
-                    if (!Directory.Exists(pathInDatabase)) Directory.CreateDirectory(pathInDatabase);
-                    string imagePath = Path.Combine(pathInDatabase,
-                        sopUID + ".dcm");
-                    if (!File.Exists(imagePath))
-                    {
-                        // DicomAnonymizer.SecurityProfileOptions.
-                        var profile = new DicomAnonymizer.SecurityProfile();
-                        profile.PatientName = "random";
-                        profile.PatientID = "random";
-                        DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
-                        request.Dataset = anonymizer.Anonymize(request.Dataset);
-                        //
-
-                        // get more data
-                        string PatientName = "";
-                        request.Dataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
-                        Console.WriteLine("patient name " + PatientName);
-                        string PatientID = "";
-                        request.Dataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
-
-                        // add entry in database
-                        var study = new StudyQueryOut
-                        {
-                            StudyInstanceUID = StudyInstanceUID,
-                            PatientID = PatientID,
-                            PatientName = PatientName,
-                            StudyDate = date.ToString()
-                        };
-                        using (var db = new LiteDatabase("./databaseFolder/database.db"))
-                        {
-                            var studies = db.GetCollection<StudyQueryOut>("studies");
-                            if (studies.FindById(StudyInstanceUID) == null)
-                                studies.Insert(study);
-                        }
-                        //
-                        
-                        request.File.Save(imagePath);
-                        Console.WriteLine("received and saved a file in database");
-                    }
-                    else Console.WriteLine("File already present in database");
-                }
-                catch (Exception ec) { Console.WriteLine(ec.Message + "   " + ec.ToString()); }
-            }
-            return new DicomCStoreResponse(request, DicomStatus.Success);
+            return Program.onCStoreRequest(request);
         }
-        public class StudyQueryOut
-        {
-            [BsonId]
-            public string StudyInstanceUID { get; set; } = "";
-            public string PatientID { get; set; } = "";
-            public string PatientName { get; set; } = "";
-            public string StudyDate { get; set; } = "";
-        }
+
+        //
+
+        public CStoreSCP(INetworkStream stream, Encoding fallbackEncoding, Dicom.Log.Logger log)
+            : base(stream, fallbackEncoding, log) { }
 
         private void SendAssociationAccept(DicomAssociation association)
         {
@@ -213,4 +74,5 @@ namespace Listener
             return Task.Run(() => { OnReceiveAssociationReleaseRequest(); });
         }
     }
+
 }

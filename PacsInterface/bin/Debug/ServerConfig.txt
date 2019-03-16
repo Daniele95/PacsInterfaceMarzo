@@ -1,6 +1,0 @@
-localhost
-11118
-MIOSERVER
-True
-ANATOMAGETABLE
-104

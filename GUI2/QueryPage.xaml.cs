@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace GUI2
+namespace GUI
 {
     public partial class QueryPage : Page
     {
