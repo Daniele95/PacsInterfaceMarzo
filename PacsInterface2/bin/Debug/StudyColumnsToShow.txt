@@ -1,4 +1,8 @@
+ModalitiesInStudy
+StudyDate
+PatientBirthDate
 StudyDescription
+AccessionNumber
 PatientID
 PatientName
-StudyDate
+StudyInstanceUID

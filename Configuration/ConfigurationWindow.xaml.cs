@@ -75,16 +75,18 @@ namespace Configuration
         // query show options
         List<CheckBox> StudyProperties;
         List<CheckBox> SeriesProperties;
-        public class StudyQueryOut
+        public class Study
         {
             public string StudyInstanceUID { get; set; } = "";
-            public string PatientID { get; set; } = "";
             public string PatientName { get; set; } = "";
+            public string PatientID { get; set; } = "";
             public string StudyDate { get; set; } = "";
             public string ModalitiesInStudy { get; set; } = "";
+            public string PatientBirthDate { get; set; } = "";
             public string StudyDescription { get; set; } = "";
+            public string AccessionNumber { get; set; } = "";
         }
-        public class SeriesQueryOut
+        public class Series
         {
             public string SeriesDescription { get; set; } = "";
             public string StudyDate { get; set; } = "";
@@ -154,7 +156,7 @@ namespace Configuration
 
             // configure columns to show as query result
             StudyProperties = new List<CheckBox>();
-            PropertyInfo[] studyProperty = typeof(StudyQueryOut).GetProperties();
+            PropertyInfo[] studyProperty = typeof(Study).GetProperties();
             foreach (var property in studyProperty)
             {
                 CheckBox cb = new CheckBox();
@@ -173,7 +175,7 @@ namespace Configuration
             }
 
             SeriesProperties = new List<CheckBox>();
-            PropertyInfo[] seriesProperties = typeof(SeriesQueryOut).GetProperties();
+            PropertyInfo[] seriesProperties = typeof(Series).GetProperties();
             foreach (var property in seriesProperties)
             {
                 CheckBox cb = new CheckBox();

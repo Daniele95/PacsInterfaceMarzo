@@ -1,2 +1,5 @@
 Modality
 StudyDate
+SeriesDescription
+SeriesInstanceUID
+StudyInstanceUID

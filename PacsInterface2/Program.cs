@@ -24,7 +24,7 @@ namespace PacsInterface
             // delete all local files
             var di = new DirectoryInfo(configuration.fileDestination);
             foreach (var file in di.GetFiles()) file.Delete();
-            foreach (var folder in di.GetDirectories()) Directory.Delete(folder.FullName,true);
+            foreach (var folder in di.GetDirectories()) Directory.Delete(folder.FullName, true);
 
             // setup GUI and handle GUI events
             setupGUI = new SetupGUI(mainWindow);
@@ -35,23 +35,32 @@ namespace PacsInterface
 
             // setup query page
             var studyTemplate = new Study();
-            studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID" ,visible=false});
-            studyTemplate.Add(new QueryParameter { name = "PatientName" });
-            studyTemplate.Add(new QueryParameter { name = "PatientID" });
-            studyTemplate.Add(new QueryParameter { name = "StudyDate" });
-            studyTemplate.Add(new QueryParameter { name = "ModalitiesInStudy" });
-            studyTemplate.Add(new QueryParameter { name = "PatientBirthDate" });
-            studyTemplate.Add(new QueryParameter { name = "StudyDescription" });
-            studyTemplate.Add(new QueryParameter { name = "AccessionNumber" });
+            bool studyInstanceUIDVisible = false;
+            foreach (var line in File.ReadAllLines("StudyColumnsToShow.txt"))
+            {
+                if (line != "StudyInstanceUID")
+                    studyTemplate.Add(new QueryParameter { name = line });
+                else
+                    studyInstanceUIDVisible = true;
+            }
+            studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
+
             setupGUI.setupQueryFields(studyTemplate);
             setupGUI.setupStudyTable(studyTemplate);
 
             // setup download page
             seriesTemplate = new Series();
-            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID",visible = false });
-            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID" ,visible=false});
-            seriesTemplate.Add(new QueryParameter { name = "StudyDate" });
-            seriesTemplate.Add(new QueryParameter { name = "SeriesDescription" });
+            studyInstanceUIDVisible = false;
+            bool seriesInstanceUIDVisible = false;
+            foreach (var line in File.ReadAllLines("SeriesColumnsToShow.txt"))
+            {
+                if (line == "StudyInstanceUID") studyInstanceUIDVisible = true;
+                if(line=="SeriesInstanceUID") seriesInstanceUIDVisible = true;
+                else seriesTemplate.Add(new QueryParameter { name = line });
+            }
+            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
+            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID", visible = seriesInstanceUIDVisible });
+
             setupGUI.setupSeriesTable(seriesTemplate);
 
             // setup local page
