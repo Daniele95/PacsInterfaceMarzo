@@ -1,10 +1,10 @@
 ﻿using Dicom;
 using Dicom.Imaging;
+using Dicom.Media;
 using Dicom.Network;
-using LiteDB;
 using System;
-using System.Globalization;
 using System.IO;
+using System.Threading;
 
 namespace Listener
 {
@@ -15,7 +15,7 @@ namespace Listener
             Console.WriteLine("received cstore request " + request.ToString());
 
             if (File.Exists("singleImage.txt"))
-                saveImage(request);
+                saveThumb(request);
             else
             {
                 Console.WriteLine("now save in database" + Environment.NewLine);
@@ -26,7 +26,38 @@ namespace Listener
 
         }
 
-        private static void saveImage(DicomCStoreRequest request)
+        private static void saveSeries(DicomCStoreRequest request)
+        {
+            string path = File.ReadAllLines("pathForDownload.txt")[0];
+            // if path not empty:
+            if (Directory.GetFiles(path).Length == 0)
+            {
+                // get parameters
+                string imageID = "";
+                request.Dataset.TryGetSingleValue(DicomTag.ImageID, out imageID);
+
+                // Anonymize all files
+                if (bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]))
+                {
+                    var ad = DicomAnonymizer.SecurityProfileOptions.BasicProfile;
+                    var profile = new DicomAnonymizer.SecurityProfile();
+                    profile.PatientName = "random";
+                    profile.PatientID = "random";
+                    DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
+                    request.Dataset = anonymizer.Anonymize(request.Dataset);
+                }
+
+                // save
+                string filePath = Path.Combine(path, imageID + ".dcm");
+                request.File.Save(filePath);
+               // addEntryInDatabase(filePath);
+                Console.WriteLine("received and saved a file in database");
+            }
+            else Console.WriteLine("File already present in database");
+            updateDatabase();
+        }
+
+        private static void saveThumb(DicomCStoreRequest request)
         {
             Console.WriteLine("now save on ./images/file.jpg");
 
@@ -39,79 +70,48 @@ namespace Listener
             image.RenderImage().AsClonedBitmap().Save("./images/file.jpg");
         }
 
-        private static void saveSeries(DicomCStoreRequest request)
-        { 
-            // get parameters
-            string dateString = "";
-            request.Dataset.TryGetSingleValue(DicomTag.StudyDate, out dateString);
-            DateTime date = DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-            string StudyInstanceUID = "";
-            request.Dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
-            string SeriesInstanceUID = "";
-            request.Dataset.TryGetSingleValue(DicomTag.SeriesInstanceUID, out SeriesInstanceUID);
-            string SOPInstanceUID = "";
-            request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
+        private static void updateDatabase()
+        {
+            string fileDestination = File.ReadAllLines("ServerConfig.txt")[6];
+            string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
 
-            // save in database folder
-            var pathInDatabase = Path.GetFullPath("./databaseFolder");
-            // take last two numbers, for examples seriesinstanceuid ends with .150.0
-            var seriesUIDs = SeriesInstanceUID.Split('.');
-            string seriesUID = seriesUIDs[seriesUIDs.Length - 2] + "." + seriesUIDs[seriesUIDs.Length - 1];
-            var sopUIDs = SOPInstanceUID.Split('.');
-            string sopUID = sopUIDs[sopUIDs.Length - 2] + "." + sopUIDs[sopUIDs.Length - 1];
-
-            pathInDatabase = Path.Combine(pathInDatabase, date.Year.ToString(), date.Month.ToString(), date.Day.ToString(),
-                StudyInstanceUID, seriesUID);
-            if (!Directory.Exists(pathInDatabase)) Directory.CreateDirectory(pathInDatabase);
-            string imagePath = Path.Combine(pathInDatabase,
-                sopUID + ".dcm");
-
-            if (!File.Exists(imagePath))
+            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             {
-                // anonymize
-                if (bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]))
+                var dicomDir = new DicomDirectory();
+                int i = 0;
+                foreach (string file in Directory.EnumerateFiles(fileDestination, "*.dcm*", SearchOption.AllDirectories))
                 {
-                    var profile = new DicomAnonymizer.SecurityProfile();
-                    profile.PatientName = "random";
-                    profile.PatientID = "random";
-                    DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
-                    request.Dataset = anonymizer.Anonymize(request.Dataset);
+                    var dicomFile = DicomFile.Open(file);
+                    dicomDir.AddFile(dicomFile, i.ToString()); i++;
+                    Console.WriteLine("save file: " + dicomFile.Dataset.GetSingleValue<string>(DicomTag.PatientName));
                 }
-                // get more data
-                string PatientName = "";
-                request.Dataset.TryGetSingleValue(DicomTag.PatientName, out PatientName);
-                Console.WriteLine("patient name " + PatientName);
-                string PatientID = "";
-                request.Dataset.TryGetSingleValue(DicomTag.PatientID, out PatientID);
-
-                // add entry in database
-                var study = new Study
-                {
-                    StudyInstanceUID = StudyInstanceUID,
-                    PatientID = PatientID,
-                    PatientName = PatientName,
-                    StudyDate = date.ToString()
-                };
-                using (var db = new LiteDatabase("./databaseFolder/database.db"))
-                {
-                    var studies = db.GetCollection<Study>("studies");
-                    if (studies.FindById(StudyInstanceUID) == null) studies.Insert(study);
-                }
-                //
-
-                request.File.Save(imagePath);
-                Console.WriteLine("received and saved a file in database");
+                dicomDir.Save(fileStream);
             }
-            else Console.WriteLine("File already present in database");
         }
 
-    }
-    public class Study
-    {
-        [BsonId]
-        public string StudyInstanceUID { get; set; } = "";
-        public string PatientID { get; set; } = "";
-        public string PatientName { get; set; } = "";
-        public string StudyDate { get; set; } = "";
+        /*private static void addEntryInDatabase(string filePath)
+        {
+            string fileDestination = File.ReadAllLines("ServerConfig.txt")[6];
+            string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
+
+            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var dicomDir = DicomDirectory.Open(fileStream);
+                if (dicomDir == null)
+                {
+                    Console.WriteLine("NULLO!!!");
+                    dicomDir = new DicomDirectory();
+
+                }
+                var dicomFile = DicomFile.Open(filePath);
+                dicomDir.AddFile(dicomFile, DateTime.Now.Second.ToString());
+                Console.WriteLine("TEMPO: "+ DateTime.Now.Second.ToString());
+
+
+                Console.WriteLine("save file: " + dicomFile.Dataset.GetSingleValue<string>(DicomTag.PatientName));
+                dicomDir.Save(fileStream);
+            }
+        }
+        */
     }
 }

@@ -1,11 +1,10 @@
 ﻿using Dicom;
+using Dicom.Media;
 using Dicom.Network;
 using GUI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -49,6 +48,9 @@ namespace PacsInterface
             seriesTemplate.Add(new QueryParameter { name = "StudyDate" });
             seriesTemplate.Add(new QueryParameter { name = "SeriesDescription" });
             setupGUI.setupSeriesTable(seriesTemplate);
+
+            // setup local page
+            setupGUI.setupLocalTable(studyTemplate);
         }
 
         // study query
@@ -130,13 +132,27 @@ namespace PacsInterface
 
             // prepare to receive data
             File.Delete("singleImage.txt");
-            // write file path
-            // based on uids, current date, and path chosen by user
+            // write file path based on uids, current date, and path chosen by user
+            string path = Path.Combine(
+                configuration.fileDestination,
+                DateTime.Now.Year.ToString(),
+                DateTime.Now.Month.ToString(),
+                DateTime.Now.Day.ToString(),
+                seriesResponse.getStudyInstanceUID(),
+                seriesResponse.getSeriesInstanceUID());
+            Directory.CreateDirectory(path);
+            using (var streamWriter = new StreamWriter("pathForDownload.txt", false))
+            {
+                streamWriter.WriteLine(path);
+            }
 
             // send query
             Debug.downloading(configuration);
             client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
             Debug.done();
+
+            setupGUI.showLocal();
+
         }
 
         // download sample image from series

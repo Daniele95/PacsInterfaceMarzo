@@ -73,29 +73,12 @@ namespace PacsInterface
 
             });
         }
-        protected virtual bool IsFileLocked(FileInfo file)
+        public static bool IsFileLocked(FileInfo file)
         {
             FileStream stream = null;
-
-            try
-            {
-                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
-            }
-            catch (IOException)
-            {
-                //the file is unavailable because it is:
-                //still being written to
-                //or being processed by another thread
-                //or does not exist (has already been processed)
-                return true;
-            }
-            finally
-            {
-                if (stream != null)
-                    stream.Close();
-            }
-
-            //file is not locked
+            try { stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None); }
+            catch (IOException) { return true; }
+            finally { if (stream != null) stream.Close(); }
             return false;
         }
 
@@ -133,7 +116,7 @@ namespace PacsInterface
                     {
                         foreach (var modality in modalities)
                             value = value + modality + ", ";
-                        if(value.Length>0)
+                        if (value.Length > 0)
                             value = value.Substring(0, value.Length - 2);
                     }
                 }

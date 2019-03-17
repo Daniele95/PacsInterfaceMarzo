@@ -1,7 +1,7 @@
 localhost
 11118
 MIOSERVER
-False
+True
 ANATOMAGETABLE
 104
 C:/Dicom

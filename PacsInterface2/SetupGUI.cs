@@ -1,6 +1,9 @@
-﻿using GUI;
+﻿using Dicom;
+using Dicom.Media;
+using GUI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,11 +18,13 @@ namespace PacsInterface
         MainWindow mainWindow;
         QueryPage queryPage;
         DownloadPage downloadPage;
+        LocalPage localPage;
         internal SetupGUI(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
             queryPage = mainWindow.queryPage;
             downloadPage = mainWindow.downloadPage;
+            localPage = mainWindow.localPage;
         }
 
         // setup query page
@@ -79,35 +84,6 @@ namespace PacsInterface
                 queryPage.listView.Items.Add(studyResponse.getDynamic());
         }
 
-        // setup download page
-        internal void setupSeriesTable(Series seriesTemplate)
-        {
-            foreach (var seriesParameter in seriesTemplate)
-                downloadPage.gridView.Columns.Add(new GridViewColumn
-                {
-                    Header = seriesParameter.name,
-                    DisplayMemberBinding = new Binding(seriesParameter.name),
-                    Width = 100
-                });
-            downloadPage.gridView.Columns.Add(new GridViewColumn
-            {
-                Header = "Image",
-                CellTemplate = downloadPage.FindResource("iconTemplate") as DataTemplate
-            });
-        }
-        internal void addSeriesToTable(List<Series> seriesResponses)
-        {
-            mainWindow.frame.Navigate(downloadPage);
-            downloadPage.listView.Items.Clear();
-            foreach (Series seriesResponse in seriesResponses)
-                downloadPage.listView.Items.Add(seriesResponse.getDynamic());
-        }
-        internal void addImage(int seriesNumber, BitmapImage img)
-        {
-            var dyn = downloadPage.listView.Items[seriesNumber] as dynamic;
-            dyn.Image = img;
-        }
-
         // get query parameters specified by the user on 'enter' key
         internal delegate void SearchStudiesEvent(Study study);
         internal SearchStudiesEvent searchStudiesEvent;
@@ -142,5 +118,94 @@ namespace PacsInterface
             }
         }
 
+        // setup download page
+        internal void setupSeriesTable(Series seriesTemplate)
+        {
+            foreach (var seriesParameter in seriesTemplate)
+                downloadPage.gridView.Columns.Add(new GridViewColumn
+                {
+                    Header = seriesParameter.name,
+                    DisplayMemberBinding = new Binding(seriesParameter.name),
+                    Width = 100
+                });
+            downloadPage.gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Image",
+                CellTemplate = downloadPage.FindResource("iconTemplate") as DataTemplate
+            });
+        }
+        internal void addSeriesToTable(List<Series> seriesResponses)
+        {
+            mainWindow.frame.Navigate(downloadPage);
+            downloadPage.listView.Items.Clear();
+            foreach (Series seriesResponse in seriesResponses)
+                downloadPage.listView.Items.Add(seriesResponse.getDynamic());
+        }
+        internal void addImage(int seriesNumber, BitmapImage img)
+        {
+            var dyn = downloadPage.listView.Items[seriesNumber] as dynamic;
+            dyn.Image = img;
+        }
+
+        // setup local page
+        internal void setupLocalTable(Study studyTemplate)
+        {
+            foreach (var parameter in studyTemplate)
+                localPage.gridView.Columns.Add(new GridViewColumn
+                {
+                    Header = parameter.name,
+                    DisplayMemberBinding = new Binding(parameter.name),
+                    Width = 100
+                });
+        }
+        internal void showLocal()
+        {
+            localPage.listView.Items.Clear();
+            mainWindow.frame.Navigate(localPage);
+
+            string fileDestination = File.ReadAllLines("ServerConfig.txt")[6];
+            string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
+
+            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var dicomDir = DicomDirectory.Open(fileStream);
+                if (dicomDir != null)
+                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
+                    {
+                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
+                        {
+                            studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
+                            studyRecord.Add(DicomTag.PatientID,patientRecord.GetSingleValue<string>(DicomTag.PatientID));
+                            Study myStudy = new Study(studyRecord, studyTemplate);
+                            localPage.listView.Items.Add(myStudy.getDynamic());
+                        }
+                    }
+                 printDataset(dicomDir);
+            }
+        }
+
+        void printDataset(DicomDirectory dicomDir2)
+        {
+            foreach (var patientRecord in dicomDir2.RootDirectoryRecordCollection)
+            {
+                Console.WriteLine(
+                    "Patient: {0} ({1})",
+                    patientRecord.GetSingleValue<string>(DicomTag.PatientName),
+                    patientRecord.GetSingleValue<string>(DicomTag.PatientID));
+
+
+                foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
+                {
+                    Console.WriteLine("\tStudy: {0}", studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+
+                    foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
+                    {
+                        Console.WriteLine("\t\tSeries: {0}", seriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+
+
+                    }
+                }
+            }
+        }
     }
 }

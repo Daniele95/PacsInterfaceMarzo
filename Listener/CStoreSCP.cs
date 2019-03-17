@@ -20,8 +20,7 @@ namespace Listener
         public void OnReceiveAssociationRequest(DicomAssociation association)
         {
             Console.WriteLine("received association request " + association.ToString());
-            foreach (var pc in association.PresentationContexts)
-                pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
+            foreach (var pc in association.PresentationContexts) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
             SendAssociationAccept(association);
         }
 
