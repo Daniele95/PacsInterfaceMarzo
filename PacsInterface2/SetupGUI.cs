@@ -180,31 +180,6 @@ namespace PacsInterface
                             localPage.listView.Items.Add(myStudy.getDynamic());
                         }
                     }
-                 printDataset(dicomDir);
-            }
-        }
-
-        void printDataset(DicomDirectory dicomDir2)
-        {
-            foreach (var patientRecord in dicomDir2.RootDirectoryRecordCollection)
-            {
-                Console.WriteLine(
-                    "Patient: {0} ({1})",
-                    patientRecord.GetSingleValue<string>(DicomTag.PatientName),
-                    patientRecord.GetSingleValue<string>(DicomTag.PatientID));
-
-
-                foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
-                {
-                    Console.WriteLine("\tStudy: {0}", studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
-
-                    foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
-                    {
-                        Console.WriteLine("\t\tSeries: {0}", seriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
-
-
-                    }
-                }
             }
         }
     }

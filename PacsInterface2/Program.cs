@@ -147,10 +147,12 @@ namespace PacsInterface
             }
 
             // send query
-            Debug.downloading(configuration);
-            client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
-            Debug.done();
-
+            if (Directory.GetFiles(path).Length == 0)
+            {
+                Debug.downloading(configuration);
+                client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
+                Debug.done();
+            } else Console.WriteLine("File is already present in database.");
             setupGUI.showLocal();
 
         }

@@ -189,17 +189,17 @@ namespace PacsInterface
         }
         internal static void gotNumberOfResults(int count)
         {
-            Console.WriteLine("got " + count.ToString() + " studies" + Environment.NewLine);
+            Console.WriteLine("got " + count.ToString() + Environment.NewLine);
         }
         internal static void studyQuery(CurrentConfiguration configuration, Study studyQuery)
         {
             Console.WriteLine("Querying server " + configuration.ip + ":" + configuration.port
-                + " for STUDIES with:" + Environment.NewLine + studyQuery.ToString());
+                + " for STUDIES");
         }
         internal static void seriesQuery(CurrentConfiguration configuration, Series seriesTemplate)
         {
             Console.WriteLine(Environment.NewLine
-                + "#############################################################"
+                + "-------------------------------------------------"
                 + Environment.NewLine + Environment.NewLine
                 + "Querying server " + configuration.ip + ":" + configuration.port
                 + " for SERIES in study no. " + seriesTemplate.getStudyInstanceUID());
@@ -210,9 +210,7 @@ namespace PacsInterface
         }
         internal static void addedSeriesToTable()
         {
-            Console.WriteLine("Added series to table"
-                + Environment.NewLine
-                + "-------------------------------------------------------------------"
+            Console.WriteLine( "-------------------------------------------------"
                 + Environment.NewLine);
         }
         internal static void downloading(CurrentConfiguration configuration)
@@ -222,6 +220,7 @@ namespace PacsInterface
         internal static void done()
         {
             Console.WriteLine("Done.");
+            Console.WriteLine("-------------------------------------------------");
         }
         internal static void downloadingImage(CurrentConfiguration configuration, string SOPInstanceUID)
         {
@@ -231,6 +230,7 @@ namespace PacsInterface
         }
         internal static void imageQuery(CurrentConfiguration configuration, Series seriesResponse)
         {
+            Console.WriteLine("-------------------------------------------------");
             Console.WriteLine(Environment.NewLine + "Querying server " + configuration.ip + ":" + configuration.port +
                        " for IMAGES in series no. " + seriesResponse.getSeriesInstanceUID());
         }
