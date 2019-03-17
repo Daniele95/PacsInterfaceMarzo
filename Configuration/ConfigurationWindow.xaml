@@ -28,13 +28,14 @@
         <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="371,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156"><Run Text="Columns to show:"/><LineBreak/><Run/></TextBlock>
         <TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="215,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156" Text="In Study Query:"/>
         <TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Left" Margin="535,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156" Text="In Series query:"/>
-        <CheckBox x:Name="anonymizeDataCheckbox" Content="anonymize downloaded data" HorizontalAlignment="Left" Margin="407,147,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.133,1.385" Checked="anonymizeDataCheckbox_Checked" Unchecked="anonymizeDataCheckbox_Checked"/>
-        <Button x:Name="button" Content="change" HorizontalAlignment="Left" Margin="776,80,0,0" VerticalAlignment="Top" Width="45" Click="setThisNodesName"/>
+        <CheckBox x:Name="anonymizeDataCheckbox" Content="anonymize downloaded data" HorizontalAlignment="Left" Margin="407,160,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.133,1.385" Checked="anonymizeDataCheckbox_Checked" Unchecked="anonymizeDataCheckbox_Checked"/>
+        <Button x:Name="button" Content="Change" HorizontalAlignment="Left" Margin="776,80,0,0" VerticalAlignment="Top" Width="45" Click="setThisNodesName"/>
         <TextBlock x:Name="thisNodesName" HorizontalAlignment="Left" Margin="507,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="222" Height="17"/>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="407,87,0,0" TextWrapping="Wrap" Text="This node:" VerticalAlignment="Top"/>
         <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="407,56,0,0" TextWrapping="Wrap" Text="Server to query:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="destinationBlock" HorizontalAlignment="Left" Margin="407,118,0,0" TextWrapping="Wrap" Text="Destination of downlaoded data" VerticalAlignment="Top"/>
-        <TextBox x:Name="destinationBox" HorizontalAlignment="Left" Height="23" Margin="582,115,0,0" TextWrapping="Wrap" Text="C:/Dicom" VerticalAlignment="Top" Width="289" />
+        <TextBlock x:Name="destinationBlock" HorizontalAlignment="Left" Margin="407,118,0,0" TextWrapping="Wrap" Text="Destination of downloaded data" VerticalAlignment="Top" Height="29" Width="105"/>
+        <Button x:Name="browseButton" Content="Browse" HorizontalAlignment="Left" Margin="776,115,0,0" VerticalAlignment="Top" Width="45" Click="browseButton_Click"/>
+        <TextBlock x:Name="destinationBox" HorizontalAlignment="Left" Margin="507,118,0,0" TextWrapping="Wrap" Text="C:/Dicom" VerticalAlignment="Top" Width="242"/>
 
     </Grid>
 </Window>

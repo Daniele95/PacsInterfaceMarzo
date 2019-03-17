@@ -65,17 +65,19 @@ namespace PacsInterface
                     Grid.SetColumn(datePickerMax, i);
                     queryPage.grid.Children.Add(datePickerMax);
                 }
+
             }
         }
         internal void setupStudyTable(Study studyTemplate)
         {
             foreach (var studyParameter in studyTemplate)
-                queryPage.gridView.Columns.Add(new GridViewColumn
-                {
-                    Header = studyParameter.name,
-                    DisplayMemberBinding = new Binding(studyParameter.name),
-                    Width = 100
-                });
+                if (studyParameter.visible == true)
+                    queryPage.gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = studyParameter.name,
+                        DisplayMemberBinding = new Binding(studyParameter.name),
+                        Width = 100
+                    });
         }
         internal void addStudiesToTable(List<Study> studyResponses)
         {
@@ -122,12 +124,13 @@ namespace PacsInterface
         internal void setupSeriesTable(Series seriesTemplate)
         {
             foreach (var seriesParameter in seriesTemplate)
-                downloadPage.gridView.Columns.Add(new GridViewColumn
-                {
-                    Header = seriesParameter.name,
-                    DisplayMemberBinding = new Binding(seriesParameter.name),
-                    Width = 100
-                });
+                if (seriesParameter.visible == true)
+                    downloadPage.gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = seriesParameter.name,
+                        DisplayMemberBinding = new Binding(seriesParameter.name),
+                        Width = 100
+                    });
             downloadPage.gridView.Columns.Add(new GridViewColumn
             {
                 Header = "Image",
@@ -151,12 +154,13 @@ namespace PacsInterface
         internal void setupLocalTable(Study studyTemplate)
         {
             foreach (var parameter in studyTemplate)
-                localPage.gridView.Columns.Add(new GridViewColumn
-                {
-                    Header = parameter.name,
-                    DisplayMemberBinding = new Binding(parameter.name),
-                    Width = 100
-                });
+                if (parameter.visible == true)
+                    localPage.gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = parameter.name,
+                        DisplayMemberBinding = new Binding(parameter.name),
+                        Width = 100
+                    });
         }
         internal void showLocal()
         {
@@ -175,7 +179,7 @@ namespace PacsInterface
                         foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
                         {
                             studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
-                            studyRecord.Add(DicomTag.PatientID,patientRecord.GetSingleValue<string>(DicomTag.PatientID));
+                            studyRecord.Add(DicomTag.PatientID, patientRecord.GetSingleValue<string>(DicomTag.PatientID));
                             Study myStudy = new Study(studyRecord, studyTemplate);
                             localPage.listView.Items.Add(myStudy.getDynamic());
                         }

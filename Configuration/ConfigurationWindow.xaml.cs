@@ -128,7 +128,6 @@ namespace Configuration
                 configuration.thisNodePort;
             anonymizeDataCheckbox.IsChecked = configuration.anonymizeData;
             destinationBox.Text = configuration.fileDestination;
-            destinationBox.KeyDown += destinationBox_TextChanged;
             //
 
             // show list of known servers
@@ -386,9 +385,13 @@ namespace Configuration
             configuration.anonymizeData = bool.Parse(anonymizeDataCheckbox.IsChecked.ToString());
             configuration.writeDown();
         }
-
-        private void destinationBox_TextChanged(object sender, RoutedEventArgs e)
+     
+        private void browseButton_Click(object sender, RoutedEventArgs e)
         {
+            System.Windows.Forms.FolderBrowserDialog openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                destinationBox.Text= openFolderDialog.SelectedPath;
+
             if (configuration != null)
             {
                 configuration.fileDestination = destinationBox.Text;

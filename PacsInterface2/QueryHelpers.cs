@@ -88,6 +88,7 @@ namespace PacsInterface
     {
         public string name { get; set; } = "";
         public string value { get; set; } = "";
+        public bool visible { get; set; } = true;
         public DicomTag getTag()
         {
             string tagNumber = typeof(DicomTag).GetField(name).GetValue(null).ToString();
@@ -183,56 +184,67 @@ namespace PacsInterface
 
     public class Debug
     {
+        static void line()
+        {
+            Console.WriteLine("-------------------------------------------------"
+                + Environment.NewLine);
+        }
+
+        static void breakLine()
+        {
+            Console.Write(Environment.NewLine+Environment.NewLine);
+        }
+
         internal static void welcome()
         {
-            Console.WriteLine("Welcome to the Pacs Interface of the Anatomage Table!");
+            Console.Write("Welcome to the Pacs Interface of the Anatomage Table!");
+            breakLine();
         }
         internal static void gotNumberOfResults(int count)
         {
-            Console.WriteLine("got " + count.ToString() + Environment.NewLine);
+            Console.Write("got " + count.ToString()); breakLine();
+            breakLine();
         }
         internal static void studyQuery(CurrentConfiguration configuration, Study studyQuery)
         {
-            Console.WriteLine("Querying server " + configuration.ip + ":" + configuration.port
+            Console.Write("Querying server " + configuration.ip + ":" + configuration.port
                 + " for STUDIES");
+            breakLine();
         }
         internal static void seriesQuery(CurrentConfiguration configuration, Series seriesTemplate)
         {
-            Console.WriteLine(Environment.NewLine
-                + "-------------------------------------------------"
-                + Environment.NewLine + Environment.NewLine
-                + "Querying server " + configuration.ip + ":" + configuration.port
+            line();
+            Console.Write( "Querying server " + configuration.ip + ":" + configuration.port
                 + " for SERIES in study no. " + seriesTemplate.getStudyInstanceUID());
+            breakLine();
         }
         internal static void cantReachServer()
         {
-            Console.WriteLine("Impossible to reach the server");
+            Console.Write("Impossible to reach the server");
+            breakLine();
         }
-        internal static void addedSeriesToTable()
-        {
-            Console.WriteLine( "-------------------------------------------------"
-                + Environment.NewLine);
-        }
+
         internal static void downloading(CurrentConfiguration configuration)
         {
-            Console.WriteLine("Downloading series from server " + configuration.ip + ":" + configuration.port);
+            Console.Write("Downloading series from server " + configuration.ip + ":" + configuration.port);
+            breakLine();
         }
         internal static void done()
         {
-            Console.WriteLine("Done.");
-            Console.WriteLine("-------------------------------------------------");
+            Console.Write("Done."); breakLine();
         }
         internal static void downloadingImage(CurrentConfiguration configuration, string SOPInstanceUID)
         {
-            Console.WriteLine("Downloading from server "
+            Console.Write("Downloading from server "
                 + configuration.ip + ":" + configuration.port
-                + " sample image no. " + SOPInstanceUID + Environment.NewLine);
+                + " sample image no. " + SOPInstanceUID);
+            breakLine();
         }
         internal static void imageQuery(CurrentConfiguration configuration, Series seriesResponse)
         {
-            Console.WriteLine("-------------------------------------------------");
-            Console.WriteLine(Environment.NewLine + "Querying server " + configuration.ip + ":" + configuration.port +
+            Console.Write( "Querying server " + configuration.ip + ":" + configuration.port +
                        " for IMAGES in series no. " + seriesResponse.getSeriesInstanceUID());
+            breakLine();
         }
     }
 }

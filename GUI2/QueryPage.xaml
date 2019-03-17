@@ -24,8 +24,6 @@
 
         <Grid x:Name="grid" x:FieldModifier="public" HorizontalAlignment="Left" Height="68" Margin="52,44,0,0" VerticalAlignment="Top" Width="693">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -33,5 +31,6 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
         </Grid>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="335,10,0,0" TextWrapping="Wrap" Text="QUERY REMOTE SERVER" VerticalAlignment="Top"/>
     </Grid>
 </Page>

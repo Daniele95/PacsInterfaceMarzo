@@ -46,6 +46,7 @@ namespace Listener
             request.Dataset.TryGetSingleValue(DicomTag.ImageID, out imageID);
 
             // Anonymize all files
+            Console.WriteLine("Anonimize: "+ File.ReadAllLines("ServerConfig.txt")[3]);
             if (bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]))
             {
                 var profile = new DicomAnonymizer.SecurityProfile();
@@ -54,7 +55,7 @@ namespace Listener
                 DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
                 request.Dataset = anonymizer.Anonymize(request.Dataset);
             }
-
+            Console.WriteLine("Anonimized: " + request.Dataset.GetSingleValue<string>(DicomTag.PatientName));
             // save
             string filePath = Path.Combine(path, imageID + ".dcm");
             request.File.Save(filePath);

@@ -4,4 +4,4 @@ MIOSERVER
 True
 ANATOMAGETABLE
 104
-C:/Dico
+C:\Users\daniele\Desktop\anonimizzazione

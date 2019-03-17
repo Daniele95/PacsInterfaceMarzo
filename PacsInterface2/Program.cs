@@ -21,6 +21,10 @@ namespace PacsInterface
             // configure server info
             configuration = new CurrentConfiguration();
             Debug.welcome();
+            // delete all local files
+            var di = new DirectoryInfo(configuration.fileDestination);
+            foreach (var file in di.GetFiles()) file.Delete();
+            foreach (var folder in di.GetDirectories()) Directory.Delete(folder.FullName,true);
 
             // setup GUI and handle GUI events
             setupGUI = new SetupGUI(mainWindow);
@@ -31,20 +35,21 @@ namespace PacsInterface
 
             // setup query page
             var studyTemplate = new Study();
-            studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID" });
+            studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID" ,visible=false});
             studyTemplate.Add(new QueryParameter { name = "PatientName" });
             studyTemplate.Add(new QueryParameter { name = "PatientID" });
             studyTemplate.Add(new QueryParameter { name = "StudyDate" });
             studyTemplate.Add(new QueryParameter { name = "ModalitiesInStudy" });
             studyTemplate.Add(new QueryParameter { name = "PatientBirthDate" });
+            studyTemplate.Add(new QueryParameter { name = "StudyDescription" });
             studyTemplate.Add(new QueryParameter { name = "AccessionNumber" });
             setupGUI.setupQueryFields(studyTemplate);
             setupGUI.setupStudyTable(studyTemplate);
 
             // setup download page
             seriesTemplate = new Series();
-            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID" });
-            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID" });
+            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID",visible = false });
+            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID" ,visible=false});
             seriesTemplate.Add(new QueryParameter { name = "StudyDate" });
             seriesTemplate.Add(new QueryParameter { name = "SeriesDescription" });
             setupGUI.setupSeriesTable(seriesTemplate);
@@ -116,8 +121,6 @@ namespace PacsInterface
             // arrange results in table
             setupGUI.addSeriesToTable(seriesResponses);
 
-            Debug.addedSeriesToTable();
-
         }
 
         // series download
@@ -152,7 +155,8 @@ namespace PacsInterface
                 Debug.downloading(configuration);
                 client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
                 Debug.done();
-            } else Console.WriteLine("File is already present in database.");
+            }
+            else Console.WriteLine("File is already present in database.");
             setupGUI.showLocal();
 
         }
