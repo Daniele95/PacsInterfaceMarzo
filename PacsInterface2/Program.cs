@@ -239,6 +239,7 @@ namespace PacsInterface
             // prepare to receive data
             File.Create("singleImage.txt").Close();
             DirectoryInfo di = new DirectoryInfo("./images/");
+            di.Create();
             foreach (FileInfo file in di.GetFiles()) file.Delete();
 
             // send query
