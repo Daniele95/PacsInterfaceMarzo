@@ -11,7 +11,8 @@
         <DockPanel HorizontalAlignment="Left" Height="26" LastChildFill="False" VerticalAlignment="Top" Width="792">
             <Button x:Name="queryPageButton" Content="Query Server" Height="26" VerticalAlignment="Top" Width="75" Click="queryPageButton_Click"/>
             <Button x:Name="downloadPageButton" Content="Download" Width="75" Click="downloadPageButton_Click"/>
-            <Button x:Name="localPageButton" Content="Local Files" Width="75" Click="localPageButton_Click" Height="26" VerticalAlignment="Bottom"/>
+            <Button x:Name="localPageButton" Content="Local Studies" Width="75" Click="localPageButton_Click" Height="26" VerticalAlignment="Bottom"/>
+            <Button x:Name="localSeriesButton" Content="Local Series" Width="75" Click="localSeriesButton_Click" Height="26" VerticalAlignment="Top"/>
         </DockPanel>
 
     </Grid>

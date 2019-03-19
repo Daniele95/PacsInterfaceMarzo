@@ -42,22 +42,19 @@ namespace Listener
             string path = File.ReadAllLines("pathForDownload.txt")[0];
 
             // get parameters
-            string imageID = "";
-            request.Dataset.TryGetSingleValue(DicomTag.ImageID, out imageID);
+            string instanceNumber = "";
+            request.Dataset.TryGetSingleValue(DicomTag.InstanceNumber, out instanceNumber);
 
             // Anonymize all files
-            Console.WriteLine("Anonimize: "+ File.ReadAllLines("ServerConfig.txt")[3]);
             if (bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]))
             {
-                var profile = new DicomAnonymizer.SecurityProfile();
-                profile.PatientName = "random";
-                profile.PatientID = "random";
-                DicomAnonymizer anonymizer = new DicomAnonymizer(profile);
-                request.Dataset = anonymizer.Anonymize(request.Dataset);
+                request.Dataset = request.Dataset.AddOrUpdate(DicomTag.PatientName,"random");
+                request.Dataset = request.Dataset.AddOrUpdate(DicomTag.PatientID, "random");
+                request.Dataset = request.Dataset.AddOrUpdate(DicomTag.StudyDate, DateTime.Now);
             }
-            Console.WriteLine("Anonimized: " + request.Dataset.GetSingleValue<string>(DicomTag.PatientName));
+            
             // save
-            string filePath = Path.Combine(path, imageID + ".dcm");
+            string filePath = Path.Combine(path, instanceNumber + ".dcm");
             request.File.Save(filePath);
 
             updateDatabase();

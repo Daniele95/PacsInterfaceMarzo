@@ -7,7 +7,8 @@ namespace GUI
 
         public QueryPage queryPage = new QueryPage();
         public DownloadPage downloadPage = new DownloadPage();
-        public LocalPage localPage = new LocalPage();
+        public LocalStudiesPage localStudiesPage = new LocalStudiesPage();
+        public LocalSeriesPage localSeriesPage = new LocalSeriesPage();
 
         public MainWindow()
         {
@@ -27,7 +28,12 @@ namespace GUI
 
         private void localPageButton_Click(object sender, RoutedEventArgs e)
         {
-            frame.Navigate(localPage);
+            frame.Navigate(localStudiesPage);
+        }
+
+        private void localSeriesButton_Click(object sender, RoutedEventArgs e)
+        {
+            frame.Navigate(localSeriesPage);
         }
     }
 }

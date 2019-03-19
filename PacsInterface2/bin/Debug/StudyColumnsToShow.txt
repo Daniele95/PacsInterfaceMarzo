@@ -1,8 +1,5 @@
-ModalitiesInStudy
+PatientName
+PatientID
 StudyDate
-PatientBirthDate
 StudyDescription
 AccessionNumber
-PatientID
-PatientName
-StudyInstanceUID

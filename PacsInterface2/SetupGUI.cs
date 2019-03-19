@@ -18,18 +18,33 @@ namespace PacsInterface
         MainWindow mainWindow;
         QueryPage queryPage;
         DownloadPage downloadPage;
-        LocalPage localPage;
+        LocalStudiesPage localStudiesPage;
+        LocalSeriesPage localSeriesPage;
         internal SetupGUI(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
             queryPage = mainWindow.queryPage;
             downloadPage = mainWindow.downloadPage;
-            localPage = mainWindow.localPage;
+            localStudiesPage = mainWindow.localStudiesPage;
+            localSeriesPage = mainWindow.localSeriesPage;
         }
 
-        // setup query page
+        //----------------------------------------- setup query page----------------------------------------
         Study studyTemplate;
         List<Control> queryFields = new List<Control>();
+        internal void setupStudyTable(Study studyTemplate)
+        {
+            foreach (var studyParameter in studyTemplate)
+                if (studyParameter.visible == true)
+                    queryPage.gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = studyParameter.name,
+                        DisplayMemberBinding = new Binding(studyParameter.name),
+                        Width = 100
+                    });
+        }
+
+        // setup query fields and query event
         internal void setupQueryFields(Study studyTemplate)
         {
             this.studyTemplate = studyTemplate;
@@ -68,25 +83,6 @@ namespace PacsInterface
 
             }
         }
-        internal void setupStudyTable(Study studyTemplate)
-        {
-            foreach (var studyParameter in studyTemplate)
-                if (studyParameter.visible == true)
-                    queryPage.gridView.Columns.Add(new GridViewColumn
-                    {
-                        Header = studyParameter.name,
-                        DisplayMemberBinding = new Binding(studyParameter.name),
-                        Width = 100
-                    });
-        }
-        internal void addStudiesToTable(List<Study> studyResponses)
-        {
-            queryPage.listView.Items.Clear();
-            foreach (Study studyResponse in studyResponses)
-                queryPage.listView.Items.Add(studyResponse.getDynamic());
-        }
-
-        // get query parameters specified by the user on 'enter' key
         internal delegate void SearchStudiesEvent(Study study);
         internal SearchStudiesEvent searchStudiesEvent;
         void onKeyDownHandler(object sender, KeyEventArgs e)
@@ -120,7 +116,14 @@ namespace PacsInterface
             }
         }
 
-        // setup download page
+        internal void addStudiesToTable(List<Study> studyResponses)
+        {
+            queryPage.listView.Items.Clear();
+            foreach (Study studyResponse in studyResponses)
+                queryPage.listView.Items.Add(studyResponse.getDynamic());
+        }
+
+        // setup download page--------------------------------------
         internal void setupSeriesTable(Series seriesTemplate)
         {
             foreach (var seriesParameter in seriesTemplate)
@@ -150,41 +153,70 @@ namespace PacsInterface
             dyn.Image = img;
         }
 
-        // setup local page
-        internal void setupLocalTable(Study studyTemplate)
+
+        //----------------------------------------- setup local studies page-----------------------------------------
+        internal void setupLocalStudyTable(Study studyTemplate)
         {
             foreach (var parameter in studyTemplate)
                 if (parameter.visible == true)
-                    localPage.gridView.Columns.Add(new GridViewColumn
+                    localStudiesPage.gridView.Columns.Add(new GridViewColumn
                     {
                         Header = parameter.name,
                         DisplayMemberBinding = new Binding(parameter.name),
                         Width = 100
                     });
         }
-        internal void showLocal()
+        internal void setupLocalQueryFields()
         {
-            localPage.listView.Items.Clear();
-            mainWindow.frame.Navigate(localPage);
+            var button = new Button { Content="Show" };
+            button.Click += onLocalSearchStudies;
+            localStudiesPage.grid.Children.Add(button);
+        }
 
-            string fileDestination = File.ReadAllLines("ServerConfig.txt")[6];
-            string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
+        internal delegate void SearchLocalStudiesEvent(Study study);
+        internal SearchLocalStudiesEvent searchLocalStudiesEvent;
+        internal void onLocalSearchStudies(object sender, RoutedEventArgs e)
+        {
+            searchLocalStudiesEvent(studyTemplate);
+        }
 
-            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            {
-                var dicomDir = DicomDirectory.Open(fileStream);
-                if (dicomDir != null)
-                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
+        internal void addLocalStudiesToTable(List<Study> studyResponses)
+        {
+            localStudiesPage.listView.Items.Clear();
+            mainWindow.frame.Navigate(localStudiesPage);
+
+            foreach (var myStudy in studyResponses)
+                localStudiesPage.listView.Items.Add(myStudy.getDynamic());
+        }
+
+        // setup local series page------------------------------------------
+        internal void setupLocalSeriesTable(Series seriesTemplate)
+        {
+            foreach (var seriesParameter in seriesTemplate)
+                if (seriesParameter.visible == true)
+                    localSeriesPage.gridView.Columns.Add(new GridViewColumn
                     {
-                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
-                        {
-                            studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
-                            studyRecord.Add(DicomTag.PatientID, patientRecord.GetSingleValue<string>(DicomTag.PatientID));
-                            Study myStudy = new Study(studyRecord, studyTemplate);
-                            localPage.listView.Items.Add(myStudy.getDynamic());
-                        }
-                    }
-            }
+                        Header = seriesParameter.name,
+                        DisplayMemberBinding = new Binding(seriesParameter.name),
+                        Width = 100
+                    });
+            localSeriesPage.gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Image",
+                CellTemplate = localSeriesPage.FindResource("iconTemplate") as DataTemplate
+            });
+        }
+        internal void addLocalSeriesToTable(List<Series> seriesResponses)
+        {
+            mainWindow.frame.Navigate(localSeriesPage);
+            localSeriesPage.listView.Items.Clear();
+            foreach (Series seriesResponse in seriesResponses)
+                localSeriesPage.listView.Items.Add(seriesResponse.getDynamic());
+        }
+        internal void addLocalSeriesImage(int seriesNumber, BitmapImage img)
+        {
+            var dyn = localSeriesPage.listView.Items[seriesNumber] as dynamic;
+            dyn.Image = img;
         }
     }
 }

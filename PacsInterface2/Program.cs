@@ -1,10 +1,12 @@
 ﻿using Dicom;
+using Dicom.Imaging;
 using Dicom.Media;
 using Dicom.Network;
 using GUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -22,16 +24,14 @@ namespace PacsInterface
             configuration = new CurrentConfiguration();
             Debug.welcome();
             // delete all local files
+            /*
             var di = new DirectoryInfo(configuration.fileDestination);
             foreach (var file in di.GetFiles()) file.Delete();
             foreach (var folder in di.GetDirectories()) Directory.Delete(folder.FullName, true);
+            */
 
             // setup GUI and handle GUI events
             setupGUI = new SetupGUI(mainWindow);
-            setupGUI.searchStudiesEvent += searchStudies;
-            mainWindow.queryPage.onStudyClickedEvent += searchSeries;
-            mainWindow.downloadPage.onSeriesClickedEvent += downloadSeries;
-            mainWindow.downloadPage.onThumbClickedEvent += onThumbClicked;
 
             // setup query page
             var studyTemplate = new Study();
@@ -46,7 +46,10 @@ namespace PacsInterface
             studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
 
             setupGUI.setupQueryFields(studyTemplate);
+            setupGUI.searchStudiesEvent += searchStudies;
+
             setupGUI.setupStudyTable(studyTemplate);
+            mainWindow.queryPage.onStudyClickedEvent += searchSeries;
 
             // setup download page
             seriesTemplate = new Series();
@@ -55,19 +58,27 @@ namespace PacsInterface
             foreach (var line in File.ReadAllLines("SeriesColumnsToShow.txt"))
             {
                 if (line == "StudyInstanceUID") studyInstanceUIDVisible = true;
-                if(line=="SeriesInstanceUID") seriesInstanceUIDVisible = true;
+                else if (line == "SeriesInstanceUID") seriesInstanceUIDVisible = true;
                 else seriesTemplate.Add(new QueryParameter { name = line });
             }
             seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
             seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID", visible = seriesInstanceUIDVisible });
 
             setupGUI.setupSeriesTable(seriesTemplate);
+            mainWindow.downloadPage.onSeriesClickedEvent += downloadSeries;
+
+            mainWindow.downloadPage.onThumbClickedEvent += onThumbClicked;
 
             // setup local page
-            setupGUI.setupLocalTable(studyTemplate);
+            setupGUI.setupLocalStudyTable(studyTemplate);
+            setupGUI.setupLocalQueryFields();
+            setupGUI.searchLocalStudiesEvent += searchLocalStudies;
+            setupGUI.setupLocalSeriesTable(seriesTemplate);
+            mainWindow.localStudiesPage.onLocalStudyClickedEvent += searchLocalSeries;
+            mainWindow.localSeriesPage.onLocalSeriesClickedEvent += showLocalSeries;
         }
 
-        // study query
+        // ----------------------------study REMOTE query-------------------------------------------------
         List<Study> studyResponses;
         void searchStudies(Study studyQuery)
         {
@@ -145,13 +156,7 @@ namespace PacsInterface
             // prepare to receive data
             File.Delete("singleImage.txt");
             // write file path based on uids, current date, and path chosen by user
-            string path = Path.Combine(
-                configuration.fileDestination,
-                DateTime.Now.Year.ToString(),
-                DateTime.Now.Month.ToString(),
-                DateTime.Now.Day.ToString(),
-                seriesResponse.getStudyInstanceUID(),
-                seriesResponse.getSeriesInstanceUID());
+            string path = seriesResponse.getFullPath(configuration.fileDestination);
             Directory.CreateDirectory(path);
             using (var streamWriter = new StreamWriter("pathForDownload.txt", false))
             {
@@ -166,7 +171,6 @@ namespace PacsInterface
                 Debug.done();
             }
             else Console.WriteLine("File is already present in database.");
-            setupGUI.showLocal();
 
         }
 
@@ -255,6 +259,105 @@ namespace PacsInterface
 
             File.Delete("singleImage.txt");
             return image;
+        }
+
+        //--------------------------- search LOCAL studies-------------------------------------------------
+        List<Study> localStudyResponses;
+        void searchLocalStudies(Study studyTemplate)
+        {
+            string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
+
+            // prepare to receive data
+            localStudyResponses = new List<Study>();
+
+            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var dicomDir = DicomDirectory.Open(fileStream);
+                if (dicomDir != null)
+                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
+                    {
+                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
+                        {
+                            studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
+                            studyRecord.Add(DicomTag.PatientID, patientRecord.GetSingleValue<string>(DicomTag.PatientID));
+                            Study myStudy = new Study(studyRecord, studyTemplate);
+                            localStudyResponses.Add(myStudy);
+                        }
+                    }
+            }
+
+            setupGUI.addLocalStudiesToTable(localStudyResponses);
+        }
+
+        // local series
+        List<Series> localSeriesResponses;
+        void searchLocalSeries(int index)
+        {
+            string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
+
+            // prepare to receive data
+            localSeriesResponses = new List<Series>();
+
+            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var dicomDir = DicomDirectory.Open(fileStream);
+                if (dicomDir != null)
+                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
+                    {
+                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
+                        {
+                            if (studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID) ==
+                                localStudyResponses[index].getStudyInstanceUID())
+                                foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
+                                {
+                                    seriesRecord.Add(DicomTag.StudyInstanceUID,
+                                        studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                                    seriesRecord.Add(DicomTag.StudyDate,
+                                        studyRecord.GetSingleValue<string>(DicomTag.StudyDate));
+                                    Series mySeries = new Series(seriesRecord, seriesTemplate);
+                                    localSeriesResponses.Add(mySeries);
+                                }
+                        }
+                    }
+            }
+
+            setupGUI.addLocalSeriesToTable(localSeriesResponses);
+            addThumbs(localSeriesResponses);
+        }
+        private void showLocalSeries(int index)
+        {
+            string fullSeriesPath = localSeriesResponses[index].getFullPath(configuration.fileDestination);
+            System.Windows.Forms.Clipboard.SetDataObject(fullSeriesPath, true);
+            MessageBox.Show("Full series path: " + Environment.NewLine + fullSeriesPath +
+                Environment.NewLine + "Copied into clipboard");
+
+        }
+
+        // local sample image
+        void addThumbs(List<Series> seriesResponses)
+        {
+            foreach (var series in seriesResponses)
+            {
+                string seriesPath = series.getFullPath(configuration.fileDestination);
+                string thumbPath = Path.Combine(seriesPath, "thumb.jpg");
+                if (!File.Exists(thumbPath))
+                {
+                    var files = Directory.GetFiles(seriesPath).OrderBy(name => name).ToArray();
+                    string imagePath = files[(int)(files.Length / 2.0f)];
+                    var thumb = new DicomImage(imagePath);
+                    thumb.RenderImage().AsClonedBitmap().Save(Path.Combine(thumbPath));
+                }
+                var imageJpg = new BitmapImage();
+                var uriSource = new Uri(Path.GetFullPath(thumbPath));
+                imageJpg.BeginInit();
+                imageJpg.CacheOption = BitmapCacheOption.OnLoad;
+                imageJpg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                imageJpg.UriSource = uriSource;
+                imageJpg.EndInit();
+
+                setupGUI.addLocalSeriesImage(seriesResponses.IndexOf(series), imageJpg);
+            }
+
         }
 
     }

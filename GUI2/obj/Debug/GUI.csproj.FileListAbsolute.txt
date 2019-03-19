@@ -4,14 +4,12 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI.csprojAssemblyReference.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\QueryPage.baml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\DownloadPage.g.cs
-C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalPage.g.cs
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\MainWindow.g.cs
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\QueryPage.g.cs
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\App.g.cs
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2_MarkupCompile.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2_MarkupCompile.lref
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\DownloadPage.baml
-C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalPage.baml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\MainWindow.baml
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2.g.resources
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2.Properties.Resources.resources
@@ -19,3 +17,7 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI.csproj.CoreCompileInputs.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2.exe
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\GUI2.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalSeriesPage.baml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalSeriesPage.g.cs
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalStudiesPage.baml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\GUI2\obj\Debug\LocalStudiesPage.g.cs

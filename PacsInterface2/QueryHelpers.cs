@@ -161,6 +161,7 @@ namespace PacsInterface
         public Series(DicomDataset dataset, Series seriesQuery) : base(dataset, seriesQuery) { }
 
         protected string SeriesInstanceUID = "";
+        protected string StudyDate = "";
 
         public string getSeriesInstanceUID()
         {
@@ -179,6 +180,30 @@ namespace PacsInterface
             foreach (var queryParameter in this)
                 if (queryParameter.name == "StudyInstanceUID")
                     queryParameter.value = StudyInstanceUID;
+        }
+
+        internal string getFullPath(string fileDestination)
+        {
+            return Path.Combine(
+                fileDestination,
+                DateTime.Now.Year.ToString(),
+                DateTime.Now.Month.ToString(),
+                DateTime.Now.Day.ToString(),
+                this.getStudyInstanceUID(),
+                this.getSeriesInstanceUID());
+        }
+
+        public string getStudyDate()
+        {
+            if (StudyDate == "")
+                foreach (var queryParameter in this)
+                    if (queryParameter.name == "StudyDate")
+                    {
+                        var date = DateTime.ParseExact(queryParameter.value, "yyyyMMdd",
+                                       System.Globalization.CultureInfo.InvariantCulture);
+                        StudyDate = date.ToString("yyyy/MM/dd");
+                    }
+            return StudyDate;
         }
     }
 

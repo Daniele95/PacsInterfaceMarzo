@@ -57,8 +57,11 @@
     <Compile Include="DownloadPage.xaml.cs">
       <DependentUpon>DownloadPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LocalPage.xaml.cs">
-      <DependentUpon>LocalPage.xaml</DependentUpon>
+    <Compile Include="LocalSeriesPage.xaml.cs">
+      <DependentUpon>LocalSeriesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LocalStudiesPage.xaml.cs">
+      <DependentUpon>LocalStudiesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="QueryPage.xaml.cs">
       <DependentUpon>QueryPage.xaml</DependentUpon>
@@ -67,7 +70,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LocalPage.xaml">
+    <Page Include="LocalSeriesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LocalStudiesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
