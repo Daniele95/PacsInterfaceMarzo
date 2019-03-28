@@ -3,12 +3,18 @@ using Dicom.Imaging;
 using Dicom.Media;
 using Dicom.Network;
 using GUI;
+using PacsInterface2;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Media.Imaging;
+
 
 namespace PacsInterface
 {
@@ -80,6 +86,9 @@ namespace PacsInterface
 
         // ----------------------------study REMOTE query-------------------------------------------------
         List<Study> studyResponses;
+
+
+
         void searchStudies(Study studyQuery)
         {
             // init find request
@@ -97,12 +106,20 @@ namespace PacsInterface
             var client = new DicomClient();
             client.AddRequest(cfind);
 
+
             // prepare to receive data
             studyResponses = new List<Study>();
 
             // send query
             Debug.studyQuery(configuration, studyQuery);
-            try { client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET); }
+            try {
+
+                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, false, false, false);
+                client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
+
+                //client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
+
+            }
             catch (Exception) { Debug.cantReachServer(); }
 
             // arrange results in table
