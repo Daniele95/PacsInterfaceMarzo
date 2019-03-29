@@ -60,12 +60,11 @@ namespace PacsInterface2
                 ssl.AuthenticateAsClientAsync(host).Wait();
 #else
                 // recuperare certificato:
-                var trust = new X509Certificate2("trust.jks","daniele");
-                var key = new X509Certificate2("rama.jks","daniele");
+                var trust = new X509Certificate2("trust.p12","daniele");
+                var key = new X509Certificate2("rama.p12","daniele");
                 var clientCertificateCollection = new X509CertificateCollection(new X509Certificate[] { trust,key });
-
-                ssl.AuthenticateAsClient(host,clientCertificateCollection, SslProtocols.Tls12, false);
-               // ssl.AuthenticateAsClient(host);
+                
+                ssl.AuthenticateAsClient(host, clientCertificateCollection, SslProtocols.Tls12, false);
 #endif
                 stream = ssl;
             }

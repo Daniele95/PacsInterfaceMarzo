@@ -106,19 +106,15 @@ namespace PacsInterface
             var client = new DicomClient();
             client.AddRequest(cfind);
 
-
             // prepare to receive data
             studyResponses = new List<Study>();
 
             // send query
             Debug.studyQuery(configuration, studyQuery);
-            try {
-
-                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, false, false, false);
+            try
+            {
+                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, false, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
-
-                //client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
-
             }
             catch (Exception) { Debug.cantReachServer(); }
 
@@ -358,22 +354,26 @@ namespace PacsInterface
             {
                 string seriesPath = series.getFullPath(configuration.fileDestination);
                 string thumbPath = Path.Combine(seriesPath, "thumb.jpg");
-                if (!File.Exists(thumbPath))
+                try
                 {
-                    var files = Directory.GetFiles(seriesPath).OrderBy(name => name).ToArray();
-                    string imagePath = files[(int)(files.Length / 2.0f)];
-                    var thumb = new DicomImage(imagePath);
-                    thumb.RenderImage().AsClonedBitmap().Save(Path.Combine(thumbPath));
-                }
-                var imageJpg = new BitmapImage();
-                var uriSource = new Uri(Path.GetFullPath(thumbPath));
-                imageJpg.BeginInit();
-                imageJpg.CacheOption = BitmapCacheOption.OnLoad;
-                imageJpg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                imageJpg.UriSource = uriSource;
-                imageJpg.EndInit();
+                    if (!File.Exists(thumbPath))
+                    {
+                        var files = Directory.GetFiles(seriesPath).OrderBy(name => name).ToArray();
+                        string imagePath = files[(int)(files.Length / 2.0f)];
+                        var thumb = new DicomImage(imagePath);
+                        thumb.RenderImage().AsClonedBitmap().Save(Path.Combine(thumbPath));
+                    }
+                    var imageJpg = new BitmapImage();
+                    var uriSource = new Uri(Path.GetFullPath(thumbPath));
+                    imageJpg.BeginInit();
+                    imageJpg.CacheOption = BitmapCacheOption.OnLoad;
+                    imageJpg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    imageJpg.UriSource = uriSource;
+                    imageJpg.EndInit();
 
-                setupGUI.addLocalSeriesImage(seriesResponses.IndexOf(series), imageJpg);
+                    setupGUI.addLocalSeriesImage(seriesResponses.IndexOf(series), imageJpg);
+                }
+                catch (Exception e) { }
             }
 
         }

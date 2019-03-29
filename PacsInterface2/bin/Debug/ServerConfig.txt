@@ -1,6 +1,6 @@
-localhost
-11118
-MIOSERVER
+dicomserver.co.uk
+104
+ANY
 True
 ANATOMAGETABLE
 104
