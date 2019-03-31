@@ -4,3 +4,9 @@ MIOSERVER
 True
 ANATOMAGETABLE
 104
+C:/Dicom
+True
+C:/rama.p12
+C:/trust.p12
+daniele
+daniele

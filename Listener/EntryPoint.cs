@@ -72,7 +72,7 @@ namespace Listener
         {
             Console.Title = "Listener";
             int port = int.Parse(args[0]);
-            DicomServer.Create<CStoreSCP>(port);
+            DicomServer.Create<CStoreSCP>(port, "rama.dcm4che.org");
             Debug.startedListening(port);
             while (true) { }
         }

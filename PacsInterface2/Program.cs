@@ -20,6 +20,7 @@ namespace PacsInterface
 {
     class Program
     {
+        public const bool useTls = true;
         // configure server access, init GUI, init listener
         CurrentConfiguration configuration;
         SetupGUI setupGUI;
@@ -113,7 +114,7 @@ namespace PacsInterface
             Debug.studyQuery(configuration, studyQuery);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, false, true, true);
+                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer(); }
@@ -148,7 +149,11 @@ namespace PacsInterface
 
             // send query
             Debug.seriesQuery(configuration, seriesTemplate);
-            try { client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET); }
+            try
+            {
+                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
+                client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
+            }
             catch (Exception) { Debug.cantReachServer(); }
 
             // arrange results in table
@@ -180,7 +185,9 @@ namespace PacsInterface
             if (Directory.GetFiles(path).Length == 0)
             {
                 Debug.downloading(configuration);
-                client.Send(configuration.ip, configuration.port, false, configuration.thisNodeAET, configuration.AET);
+                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
+                client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
+
                 Debug.done();
             }
             else Console.WriteLine("File is already present in database.");
