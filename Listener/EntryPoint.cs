@@ -72,7 +72,9 @@ namespace Listener
         {
             Console.Title = "Listener";
             int port = int.Parse(args[0]);
-            DicomServer.Create<CStoreSCP>(port, File.ReadAllLines("ServerConfig.txt")[8]);
+            string keyStoreName = File.ReadAllLines("ServerConfig.txt")[8];
+            if (!bool.Parse(args[1])) keyStoreName = "";
+            DicomServer.Create<CStoreSCP>(port, keyStoreName);
             Debug.startedListening(port);
             while (true) { }
         }

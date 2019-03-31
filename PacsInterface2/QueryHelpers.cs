@@ -59,7 +59,7 @@ namespace PacsInterface
             {
                 StartInfo = {
                     FileName = "Listener",
-                    Arguments = thisNodePort.ToString()
+                    Arguments = thisNodePort.ToString()+" "+useTls.ToString()
                 }
             };
             newListener.Start();

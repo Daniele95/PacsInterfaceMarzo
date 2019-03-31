@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,6 +21,10 @@ namespace Configuration
         public string thisNodeAET { get; set; }
         public string thisNodePort { get; set; }
         public string fileDestination { get; set; }
+        public bool useTls { get; set; }
+        public string keyStoreName { get; set; }
+        public string trustStorePath { get; set; }
+        public string trustStorePassword { get; set; }
 
         public CurrentConfiguration()
         {
@@ -31,6 +36,10 @@ namespace Configuration
             thisNodeAET = lines[4];
             thisNodePort = lines[5];
             fileDestination = lines[6];
+            useTls = bool.Parse(lines[7]);
+            keyStoreName = lines[8];
+            trustStorePath = lines[9];
+            trustStorePassword = lines[10];
         }
 
         protected virtual bool IsFileLocked(FileInfo file)
@@ -56,6 +65,10 @@ namespace Configuration
                 lines[4] = thisNodeAET;
                 lines[5] = thisNodePort;
                 lines[6] = fileDestination;
+                lines[7] = useTls.ToString();
+                lines[8] = keyStoreName;
+                lines[9] = trustStorePath;
+                lines[10] = trustStorePassword;
                 File.WriteAllLines("ServerConfig.txt", lines);
             }
         }
@@ -130,6 +143,10 @@ namespace Configuration
                 configuration.thisNodePort;
             anonymizeDataCheckbox.IsChecked = configuration.anonymizeData;
             destinationBox.Text = configuration.fileDestination;
+
+            useTlsCheckBox.IsChecked = configuration.useTls;
+            trustStorePathField.Text = configuration.trustStorePath;
+            trustStorePasswordField.Text = configuration.trustStorePassword;
             //
 
             // show list of known servers
@@ -387,16 +404,65 @@ namespace Configuration
             configuration.anonymizeData = bool.Parse(anonymizeDataCheckbox.IsChecked.ToString());
             configuration.writeDown();
         }
-     
+
         private void browseButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                destinationBox.Text= openFolderDialog.SelectedPath;
+                destinationBox.Text = openFolderDialog.SelectedPath;
 
             if (configuration != null)
             {
                 configuration.fileDestination = destinationBox.Text;
+                configuration.writeDown();
+            }
+        }
+
+        private void keyStoreLocationBrowse_Clicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFolderDialog = new System.Windows.Forms.OpenFileDialog();
+            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                KeyStorePathField.Text = openFolderDialog.FileName;
+        }
+
+        private void trustStoreLocationBrowse_Clicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFolderDialog = new System.Windows.Forms.OpenFileDialog();
+            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                trustStorePathField.Text = openFolderDialog.FileName;
+        }
+
+        private void useTlsCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            configuration.useTls = bool.Parse(useTlsCheckBox.IsChecked.ToString());
+            configuration.writeDown();
+        }
+
+        private void setKeyStore(object sender, RoutedEventArgs e)
+        {
+            if (configuration != null)
+            {
+                X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadWrite);
+                var oldCert = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false);
+                if(oldCert != null && oldCert.Count>0) store.Remove(oldCert[0]);
+                try
+                {
+                    X509Certificate2 newCert = new X509Certificate2(KeyStorePathField.Text, keyStorePasswordField.Text);
+                    store.Add(newCert);
+                    // check this line
+                    configuration.keyStoreName = newCert.GetNameInfo(X509NameType.SimpleName, false).Split(' ')[0];
+                    configuration.writeDown();
+                } catch(Exception) { MessageBox.Show("Incorrect certificate path or password"); }
+            }
+        }
+
+        private void setTrustStore(object sender, RoutedEventArgs e)
+        {
+            if (configuration != null)
+            {
+                configuration.trustStorePath = trustStorePathField.Text;
+                configuration.trustStorePassword = trustStorePasswordField.Text;
                 configuration.writeDown();
             }
         }

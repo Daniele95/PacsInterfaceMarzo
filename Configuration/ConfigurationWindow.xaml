@@ -36,6 +36,19 @@
         <TextBlock x:Name="destinationBlock" HorizontalAlignment="Left" Margin="407,118,0,0" TextWrapping="Wrap" Text="Destination of downloaded data" VerticalAlignment="Top" Height="29" Width="105"/>
         <Button x:Name="browseButton" Content="Browse" HorizontalAlignment="Left" Margin="776,115,0,0" VerticalAlignment="Top" Width="45" Click="browseButton_Click"/>
         <TextBlock x:Name="destinationBox" HorizontalAlignment="Left" Margin="507,118,0,0" TextWrapping="Wrap" Text="C:/Dicom" VerticalAlignment="Top" Width="242"/>
+        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="411,250,0,0" TextWrapping="Wrap" Text="Key Store Location" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock2_Copy" HorizontalAlignment="Left" Margin="409,310,0,0" TextWrapping="Wrap" Text="Trust Store Location" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock2_Copy1" HorizontalAlignment="Left" Margin="409,341,0,0" TextWrapping="Wrap" Text="Trust Store Password" VerticalAlignment="Top"/>
+        <CheckBox x:Name="useTlsCheckBox" Content="Use Tls Cryptography" HorizontalAlignment="Left" Margin="411,227,0,0" VerticalAlignment="Top" Checked="useTlsCheckbox_Checked" Unchecked="useTlsCheckbox_Checked"/>
+        <TextBlock x:Name="textBlock2_Copy2" HorizontalAlignment="Left" Margin="411,278,0,0" TextWrapping="Wrap" Text="Key Store Password" VerticalAlignment="Top"/>
+        <TextBlock x:Name="KeyStorePathField" HorizontalAlignment="Left" Margin="530,247,0,0" TextWrapping="Wrap" Text="C:/rama.p12" VerticalAlignment="Top" Width="246"/>
+        <TextBox x:Name="keyStorePasswordField" HorizontalAlignment="Left" Height="23" Margin="530,270,0,0" TextWrapping="Wrap" Text="daniele" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="trustStorePasswordField" HorizontalAlignment="Left" Height="23" Margin="530,341,0,0" TextWrapping="Wrap" Text="daniele" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="trustStorePathField" HorizontalAlignment="Left" Margin="530,310,0,0" TextWrapping="Wrap" Text="C:/trust.p12" VerticalAlignment="Top" Width="250"/>
+        <Button x:Name="button1" Content="Browse" HorizontalAlignment="Left" Margin="785,246,0,0" VerticalAlignment="Top" Width="75" Click="keyStoreLocationBrowse_Clicked"/>
+        <Button x:Name="button2" Content="Browse" HorizontalAlignment="Left" Margin="785,310,0,0" VerticalAlignment="Top" Width="75" Click="trustStoreLocationBrowse_Clicked"/>
+        <Button x:Name="button3" Content="Set Key Store" HorizontalAlignment="Left" Margin="785,278,0,0" VerticalAlignment="Top" Width="75" Click="setKeyStore"/>
+        <Button x:Name="button3_Copy" Content="Set Trust Store" HorizontalAlignment="Left" Margin="785,341,0,0" VerticalAlignment="Top" Width="75" Click="setTrustStore"/>
 
     </Grid>
 </Window>
