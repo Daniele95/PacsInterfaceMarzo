@@ -85,7 +85,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>k4R8s200FL8cAJRyP/fOtNN3uwfFHR7rQ+zJef2f1EU=</dsig:DigestValue>
+        <dsig:DigestValue>izOI1f24sYnulzIB9anEdn+EedcKO3iHddOkwf97CRE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -102,14 +102,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PacsInterface2.exe" size="31656">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PacsInterface2.exe" size="32680">
       <assemblyIdentity name="PacsInterface2" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>KCEE9Pj5FUzDF7xwWBe0NhHj/J68TqXqMUoHbVzEztw=</dsig:DigestValue>
+        <dsig:DigestValue>OzpIyl8CSJ7shvTdZy7ktwpZ8LfWfaQuDy0U7W588bU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

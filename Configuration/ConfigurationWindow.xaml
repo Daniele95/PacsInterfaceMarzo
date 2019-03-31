@@ -23,11 +23,11 @@
         </ListView>
         <TextBlock x:Name="currentServer" HorizontalAlignment="Left" Margin="507,56,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="222" Height="13"/>
         <Button x:Name="testSelectedButton" Content="test" HorizontalAlignment="Left" Margin="139,161,0,0" VerticalAlignment="Top" Width="60" RenderTransformOrigin="0.373,0.283" Click="testSelectedServer" />
-        <StackPanel x:Name="studyPanel" HorizontalAlignment="Left" Height="158" Margin="126,273,0,0" VerticalAlignment="Top" Width="267"/>
-        <StackPanel x:Name="seriesPanel" HorizontalAlignment="Left" Height="158" Margin="462,273,0,0" VerticalAlignment="Top" Width="267"/>
-        <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="371,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156"><Run Text="Columns to show:"/><LineBreak/><Run/></TextBlock>
-        <TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="215,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156" Text="In Study Query:"/>
-        <TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Left" Margin="535,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="156" Text="In Series query:"/>
+        <StackPanel x:Name="studyPanel" HorizontalAlignment="Left" Height="158" Margin="68,268,0,0" VerticalAlignment="Top" Width="129"/>
+        <StackPanel x:Name="seriesPanel" HorizontalAlignment="Left" Height="158" Margin="202,268,0,0" VerticalAlignment="Top" Width="105"/>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="122,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="105"><Run Text="Columns to show:"/><LineBreak/><Run/></TextBlock>
+        <TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="68,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="92" Text="In Study Query:"/>
+        <TextBlock x:Name="textBlock1_Copy1" HorizontalAlignment="Left" Margin="207,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="90" Text="In Series query:"/>
         <CheckBox x:Name="anonymizeDataCheckbox" Content="anonymize downloaded data" HorizontalAlignment="Left" Margin="407,160,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.133,1.385" Checked="anonymizeDataCheckbox_Checked" Unchecked="anonymizeDataCheckbox_Checked"/>
         <Button x:Name="button" Content="Change" HorizontalAlignment="Left" Margin="776,80,0,0" VerticalAlignment="Top" Width="45" Click="setThisNodesName"/>
         <TextBlock x:Name="thisNodesName" HorizontalAlignment="Left" Margin="507,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="222" Height="17"/>

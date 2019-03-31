@@ -3,7 +3,6 @@ using Dicom.Imaging;
 using Dicom.Media;
 using Dicom.Network;
 using GUI;
-using PacsInterface2;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +113,7 @@ namespace PacsInterface
             Debug.studyQuery(configuration, studyQuery);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
+                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer(); }
@@ -151,7 +150,7 @@ namespace PacsInterface
             Debug.seriesQuery(configuration, seriesTemplate);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
+                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer(); }
@@ -185,7 +184,7 @@ namespace PacsInterface
             if (Directory.GetFiles(path).Length == 0)
             {
                 Debug.downloading(configuration);
-                var _networkStream = new DesktopNetworkStreamTls(configuration.ip, configuration.port, useTls, true, true);
+                var _networkStream = new DesktopNetworkStreamTls( configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
 
                 Debug.done();

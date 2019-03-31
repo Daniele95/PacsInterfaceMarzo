@@ -6,7 +6,6 @@ ANATOMAGETABLE
 104
 C:/Dicom
 True
-C:/rama.p12
+rama.dcm4che.org
 C:/trust.p12
-daniele
 daniele

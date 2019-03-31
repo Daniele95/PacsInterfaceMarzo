@@ -16,6 +16,11 @@ namespace PacsInterface
         public string thisNodeAET { get; private set; }
         public int thisNodePort { get; private set; }
         public string fileDestination { get; private set; }
+        public bool useTls { get; private set; }
+        public string keyStoreName { get; private set; }
+        public string trustStorePath { get; private set; }
+        public string trustStorePassword { get; private set; }
+
 
         public CurrentConfiguration()
         {
@@ -39,6 +44,10 @@ namespace PacsInterface
                 thisNodeAET = lines[4];
                 thisNodePort = int.Parse(lines[5]);
                 fileDestination = lines[6];
+                useTls = bool.Parse(lines[7]);
+                keyStoreName = lines[8];
+                trustStorePath = lines[9];
+                trustStorePassword = lines[10];
                 file.Close();
             }
         }

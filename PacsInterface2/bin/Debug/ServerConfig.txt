@@ -5,3 +5,7 @@ True
 ANATOMAGETABLE
 104
 C:/Dicom
+True
+rama.dcm4che.org
+C:/trust.p12
+daniele

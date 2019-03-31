@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace PacsInterface2
+namespace PacsInterface
 {
     using Dicom.Network;
     using System;
@@ -37,20 +37,20 @@ namespace PacsInterface2
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        internal DesktopNetworkStreamTls(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
+        internal DesktopNetworkStreamTls(CurrentConfiguration configuration, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            this.RemoteHost = host;
-            this.RemotePort = port;
+            this.RemoteHost = configuration.ip;
+            this.RemotePort = configuration.port;
 
 #if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
 #else
-            this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
+            this.tcpClient = new TcpClient(configuration.ip, configuration.port) { NoDelay = noDelay };
 #endif
 
             Stream stream = this.tcpClient.GetStream();
-            if (useTls)
+            if (configuration.useTls)
             {
                 var ssl = new SslStream(
                     stream,
@@ -60,11 +60,15 @@ namespace PacsInterface2
                 ssl.AuthenticateAsClientAsync(host).Wait();
 #else
                 // recuperare certificato:
-                var trust = new X509Certificate2("trust.p12","daniele");
-                var key = new X509Certificate2("rama.p12","daniele");
+                var trust = new X509Certificate2(configuration.trustStorePath, configuration.trustStorePassword);
+
+                X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadOnly);
+                var key = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false)[0];
+
                 var clientCertificateCollection = new X509CertificateCollection(new X509Certificate[] { trust,key });
                 
-                ssl.AuthenticateAsClient(host, clientCertificateCollection, SslProtocols.Tls12, false);
+                ssl.AuthenticateAsClient(configuration.ip, clientCertificateCollection, SslProtocols.Tls12, false);
 #endif
                 stream = ssl;
             }
