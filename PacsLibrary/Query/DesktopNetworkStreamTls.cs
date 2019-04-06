@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace PacsInterface
+namespace PacsLibrary.Query
 {
     using Dicom.Network;
     using System;
@@ -37,7 +37,7 @@ namespace PacsInterface
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        internal DesktopNetworkStreamTls(CurrentConfiguration configuration, bool noDelay, bool ignoreSslPolicyErrors)
+        public DesktopNetworkStreamTls(CurrentConfiguration configuration, bool noDelay, bool ignoreSslPolicyErrors)
         {
             this.RemoteHost = configuration.ip;
             this.RemotePort = configuration.port;

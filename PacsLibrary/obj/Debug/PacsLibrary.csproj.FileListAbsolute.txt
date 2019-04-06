@@ -1,0 +1,10 @@
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.csprojAssemblyReference.cache
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.csproj.CoreCompileInputs.cache
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\PacsLibrary.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\PacsLibrary.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\Dicom.Core.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\Dicom.Core.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\Dicom.Core.xml
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.csproj.CopyComplete
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.pdb

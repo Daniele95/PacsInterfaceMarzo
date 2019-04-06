@@ -24,3 +24,5 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Pacs
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsInterface2\bin\Debug\PacsInterface2.application
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsInterface2\obj\Debug\PacsInterface2.exe.manifest
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsInterface2\obj\Debug\PacsInterface2.application
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsInterface2\bin\Debug\PacsLibrary.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsInterface2\bin\Debug\PacsLibrary.pdb
