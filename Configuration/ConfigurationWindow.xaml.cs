@@ -9,72 +9,10 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using PacsLibrary;
 
 namespace Configuration
 {
-    public class CurrentConfiguration
-    {
-        public string ip { get; set; }
-        public string port { get; set; }
-        public string AET { get; set; }
-        public bool anonymizeData { get; set; }
-        public string thisNodeAET { get; set; }
-        public string thisNodePort { get; set; }
-        public string fileDestination { get; set; }
-        public bool useTls { get; set; }
-        public string keyStoreName { get; set; }
-        public string trustStorePath { get; set; }
-        public string trustStorePassword { get; set; }
-
-        public CurrentConfiguration()
-        {
-            var lines = File.ReadAllLines("ServerConfig.txt");
-            ip = lines[0];
-            port = lines[1];
-            AET = lines[2];
-            anonymizeData = bool.Parse(lines[3]);
-            thisNodeAET = lines[4];
-            thisNodePort = lines[5];
-            fileDestination = lines[6];
-            useTls = bool.Parse(lines[7]);
-            keyStoreName = lines[8];
-            trustStorePath = lines[9];
-            trustStorePassword = lines[10];
-        }
-
-        protected virtual bool IsFileLocked(FileInfo file)
-        {
-            FileStream stream = null;
-            try { stream = file.Open(System.IO.FileMode.Open, FileAccess.Read, FileShare.None); }
-            catch (IOException) { return true; }
-            finally { if (stream != null) stream.Close(); }
-            return false;
-        }
-
-        public void writeDown()
-        {
-            bool locked = true;
-            while (locked) locked = IsFileLocked(new FileInfo("ServerConfig.txt"));
-            if (!locked)
-            {
-                var lines = File.ReadAllLines("ServerConfig.txt");
-                lines[0] = ip;
-                lines[1] = port;
-                lines[2] = AET;
-                lines[3] = anonymizeData.ToString();
-                lines[4] = thisNodeAET;
-                lines[5] = thisNodePort;
-                lines[6] = fileDestination;
-                lines[7] = useTls.ToString();
-                lines[8] = keyStoreName;
-                lines[9] = trustStorePath;
-                lines[10] = trustStorePassword;
-                File.WriteAllLines("ServerConfig.txt", lines);
-            }
-        }
-
-    }
-
     public partial class ConfigurationWindow : Window
     {
         public class server
@@ -85,60 +23,20 @@ namespace Configuration
             public string AET { get; set; }
         }
 
-        // query show options
         List<CheckBox> StudyProperties;
         List<CheckBox> SeriesProperties;
-        public class Study
-        {
-            public string StudyInstanceUID { get; set; } = "";
-            public string PatientName { get; set; } = "";
-            public string PatientID { get; set; } = "";
-            public string StudyDate { get; set; } = "";
-            public string ModalitiesInStudy { get; set; } = "";
-            public string PatientBirthDate { get; set; } = "";
-            public string StudyDescription { get; set; } = "";
-            public string AccessionNumber { get; set; } = "";
-        }
-        public class Series
-        {
-            public string SeriesDescription { get; set; } = "";
-            public string StudyDate { get; set; } = "";
-            public string Modality { get; set; } = "";
-            public string SeriesInstanceUID { get; set; } = "";
-            public string StudyInstanceUID { get; set; } = "";
-        }
-        //
 
-        bool isContained(string file, string content)
-        {
-            bool isContained = true;
-            string[] ls = File.ReadAllLines(file);
-            List<string> list = ls.ToList();
-            if (!list.Contains(content))
-                isContained = false;
-            return isContained;
-        }
-        void onChecked(string file, string content)
-        {
-            if (!isContained(file, content))
-                File.AppendAllText(file, content + Environment.NewLine);
-        }
-        void unCkecked(string file, string content)
-        {
-            File.WriteAllLines(file, File.ReadLines(file).Where(l => l != content).ToList());
-        }
-
-        CurrentConfiguration configuration;
+        PacsLibrary.Configuration configuration;
 
         public ConfigurationWindow()
         {
             InitializeComponent();
 
-            configuration = new CurrentConfiguration();
+            configuration = new PacsLibrary.Configuration("ServerConfig.txt");
 
             // show current configuration
             currentServer.Text = configuration.AET + "@" +
-                configuration.ip + ":" + configuration.port;
+                configuration.host + ":" + configuration.port;
             thisNodesName.Text = configuration.thisNodeAET + " " +
                 configuration.thisNodePort;
             anonymizeDataCheckbox.IsChecked = configuration.anonymizeData;
@@ -173,41 +71,27 @@ namespace Configuration
 
             // configure columns to show as query result
             StudyProperties = new List<CheckBox>();
-            PropertyInfo[] studyProperty = typeof(Study).GetProperties();
-            foreach (var property in studyProperty)
+            foreach (var property in configuration.studyTemplate)
             {
-                CheckBox cb = new CheckBox();
-                cb.Content = property.Name;
-                cb.IsChecked = isContained("StudyColumnsToShow.txt", cb.Content.ToString());
-                cb.Checked += (a, b) =>
-                {
-                    onChecked("StudyColumnsToShow.txt", cb.Content.ToString());
-                };
-                cb.Unchecked += (a, b) =>
-                {
-                    unCkecked("StudyColumnsToShow.txt", cb.Content.ToString());
-                };
-                studyPanel.Children.Add(cb);
-                StudyProperties.Add(cb);
+                CheckBox checkBox = new CheckBox();
+                checkBox.Content = property.name;
+                checkBox.IsChecked = property.visible;
+                checkBox.Checked += (a, b) => { property.visible = true; configuration.write(); };
+                checkBox.Unchecked += (a, b) => { property.visible = false; configuration.write(); };
+                studyPanel.Children.Add(checkBox);
+                StudyProperties.Add(checkBox);
             }
 
             SeriesProperties = new List<CheckBox>();
-            PropertyInfo[] seriesProperties = typeof(Series).GetProperties();
-            foreach (var property in seriesProperties)
+            foreach (var property in configuration.seriesTemplate)
             {
-                CheckBox cb = new CheckBox();
-                cb.Content = property.Name;
-                cb.IsChecked = isContained("SeriesColumnsToShow.txt", cb.Content.ToString()); ;
-                cb.Checked += (a, b) =>
-                {
-                    onChecked("SeriesColumnsToShow.txt", cb.Content.ToString());
-                };
-                cb.Unchecked += (a, b) =>
-                {
-                    unCkecked("SeriesColumnsToShow.txt", cb.Content.ToString());
-                };
-                seriesPanel.Children.Add(cb);
-                SeriesProperties.Add(cb);
+                CheckBox checkBox = new CheckBox();
+                checkBox.Content = property.name;
+                checkBox.IsChecked = property.visible;
+                checkBox.Checked += (a, b) => { property.visible = true; configuration.write(); };
+                checkBox.Unchecked += (a, b) => { property.visible = false; configuration.write(); };
+                seriesPanel.Children.Add(checkBox);
+                SeriesProperties.Add(checkBox);
             }
             //
         }
@@ -226,14 +110,14 @@ namespace Configuration
                 else
                 {
                     configuration.thisNodeAET = thisNodeAET;
-                    configuration.thisNodePort = thisNodePort;
-                    configuration.writeDown();
+                    configuration.thisNodePort = int.Parse(thisNodePort);
+                    configuration.write();
                     thisNodesName.Text = thisNodeAET + " " + thisNodePort;
                 }
                 popup.Close();
             };
             popup.AETTextBox.Text = configuration.thisNodeAET;
-            popup.portTextBox.Text = configuration.thisNodePort;
+            popup.portTextBox.Text = configuration.thisNodePort.ToString();
             popup.ShowDialog();
         }
 
@@ -388,21 +272,21 @@ namespace Configuration
         {
             if (listView.Items.Count != 0)
             {
-                server ls = listView.SelectedItem as server;
-                if (ls == null) ls = listView.Items[0] as server;
-                currentServer.Text = ls.AET + "@" + ls.ip + ":" + ls.port;
+                server listViewItem = listView.SelectedItem as server;
+                if (listViewItem == null) listViewItem = listView.Items[0] as server;
+                currentServer.Text = listViewItem.AET + "@" + listViewItem.ip + ":" + listViewItem.port;
 
-                configuration.ip = ls.ip;
-                configuration.port = ls.port;
-                configuration.AET = ls.AET;
-                configuration.writeDown();
+                configuration.host = listViewItem.ip;
+                configuration.port = int.Parse(listViewItem.port);
+                configuration.AET = listViewItem.AET;
+                configuration.write();
             }
         }
 
         private void anonymizeDataCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             configuration.anonymizeData = bool.Parse(anonymizeDataCheckbox.IsChecked.ToString());
-            configuration.writeDown();
+            configuration.write();
         }
 
         private void browseButton_Click(object sender, RoutedEventArgs e)
@@ -414,7 +298,7 @@ namespace Configuration
             if (configuration != null)
             {
                 configuration.fileDestination = destinationBox.Text;
-                configuration.writeDown();
+                configuration.write();
             }
         }
 
@@ -435,26 +319,33 @@ namespace Configuration
         private void useTlsCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             configuration.useTls = bool.Parse(useTlsCheckBox.IsChecked.ToString());
-            configuration.writeDown();
+            configuration.write();
         }
 
         private void setKeyStore(object sender, RoutedEventArgs e)
         {
-            if (configuration != null)
+            try
             {
-                X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-                store.Open(OpenFlags.ReadWrite);
-                var oldCert = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false);
-                if(oldCert != null && oldCert.Count>0) store.Remove(oldCert[0]);
-                try
+                if (configuration != null)
                 {
-                    X509Certificate2 newCert = new X509Certificate2(KeyStorePathField.Text, keyStorePasswordField.Text);
-                    store.Add(newCert);
-                    // check this line
-                    configuration.keyStoreName = newCert.GetNameInfo(X509NameType.SimpleName, false).Split(' ')[0];
-                    configuration.writeDown();
-                } catch(Exception) { MessageBox.Show("Incorrect certificate path or password"); }
+                    X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                    store.Open(OpenFlags.ReadWrite);
+                    var oldCerts = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false);
+                    foreach (var cert2 in oldCerts) MessageBox.Show(configuration.keyStoreName + " " +cert2.Subject);
+                    if(oldCerts != null && oldCerts.Count>0) store.Remove(oldCerts[0]);
+                    foreach (var myCert in store.Certificates) { store.Remove(myCert); MessageBox.Show("rimuovo certificato"); }
+                    try
+                    {
+                        X509Certificate2 newCert = new X509Certificate2(KeyStorePathField.Text, keyStorePasswordField.Text);
+                        store.Add(newCert);
+                        // check this line
+                        configuration.keyStoreName = newCert.GetNameInfo(X509NameType.SimpleName, false).Split(' ')[0];
+                        configuration.write();
+                    }
+                    catch (Exception) { MessageBox.Show("Incorrect certificate path or password"); }
+                }
             }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void setTrustStore(object sender, RoutedEventArgs e)
@@ -463,7 +354,7 @@ namespace Configuration
             {
                 configuration.trustStorePath = trustStorePathField.Text;
                 configuration.trustStorePassword = trustStorePasswordField.Text;
-                configuration.writeDown();
+                configuration.write();
             }
         }
     }

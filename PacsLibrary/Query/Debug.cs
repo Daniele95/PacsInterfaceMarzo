@@ -30,16 +30,16 @@ namespace PacsLibrary.Query
             Console.Write("got " + count.ToString()); breakLine();
             breakLine();
         }
-        public static void studyQuery(CurrentConfiguration configuration, Study studyQuery)
+        public static void studyQuery(Configuration configuration, Study studyQuery)
         {
-            Console.Write("Querying server " + configuration.ip + ":" + configuration.port
+            Console.Write("Querying server " + configuration.host + ":" + configuration.port
                 + " for STUDIES");
             breakLine();
         }
-        public static void seriesQuery(CurrentConfiguration configuration, Series seriesTemplate)
+        public static void seriesQuery(Configuration configuration, Series seriesTemplate)
         {
             line();
-            Console.Write("Querying server " + configuration.ip + ":" + configuration.port
+            Console.Write("Querying server " + configuration.host + ":" + configuration.port
                 + " for SERIES in study no. " + seriesTemplate.getStudyInstanceUID());
             breakLine();
         }
@@ -49,25 +49,25 @@ namespace PacsLibrary.Query
             breakLine();
         }
 
-        public static void downloading(CurrentConfiguration configuration)
+        public static void downloading(Configuration configuration)
         {
-            Console.Write("Downloading series from server " + configuration.ip + ":" + configuration.port);
+            Console.Write("Downloading series from server " + configuration.host + ":" + configuration.port);
             breakLine();
         }
         public static void done()
         {
             Console.Write("Done."); breakLine();
         }
-        public static void downloadingImage(CurrentConfiguration configuration, string SOPInstanceUID)
+        public static void downloadingImage(Configuration configuration, string SOPInstanceUID)
         {
             Console.Write("Downloading from server "
-                + configuration.ip + ":" + configuration.port
+                + configuration.host + ":" + configuration.port
                 + " sample image no. " + SOPInstanceUID);
             breakLine();
         }
-        public static void imageQuery(CurrentConfiguration configuration, Series seriesResponse)
+        public static void imageQuery(Configuration configuration, Series seriesResponse)
         {
-            Console.Write("Querying server " + configuration.ip + ":" + configuration.port +
+            Console.Write("Querying server " + configuration.host + ":" + configuration.port +
                        " for IMAGES in series no. " + seriesResponse.getSeriesInstanceUID());
             breakLine();
         }

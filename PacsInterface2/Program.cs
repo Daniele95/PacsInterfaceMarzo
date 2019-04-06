@@ -17,42 +17,54 @@ namespace PacsInterface
 {
     class Program
     {
-        public const bool useTls = true;
         // configure server access, init GUI, init listener
-        CurrentConfiguration configuration;
+        PacsLibrary.Configuration configuration;
         SetupGUI setupGUI;
         Series seriesTemplate;
         internal Program(MainWindow mainWindow)
         {
             // configure server info
-            configuration = new CurrentConfiguration();
+            configuration = new PacsLibrary.Configuration("ServerConfig.txt");
+            restartListener();
             Debug.welcome();
-
             // setup GUI and handle GUI events
             setupGUI = new SetupGUI(mainWindow);
 
             // setup query page
-            var studyTemplate = Query.studyParametersToShow("StudyColumnsToShow.txt");
-            setupGUI.setupQueryFields(studyTemplate);
+            setupGUI.setupQueryFields(configuration.studyTemplate);
             setupGUI.searchStudiesEvent += searchStudies;
 
-            setupGUI.setupStudyTable(studyTemplate);
+            setupGUI.setupStudyTable(configuration.studyTemplate);
             mainWindow.queryPage.onStudyClickedEvent += searchSeries;
 
             // setup download page
-            seriesTemplate = Query.seriesParametersToShow("SeriesColumnsToShow.txt");
+            seriesTemplate = configuration.seriesTemplate;
             setupGUI.setupSeriesTable(seriesTemplate);
             mainWindow.downloadPage.onSeriesClickedEvent += downloadSeries;
 
             mainWindow.downloadPage.onThumbClickedEvent += onThumbClicked;
 
             // setup local page
-            setupGUI.setupLocalStudyTable(studyTemplate);
+            setupGUI.setupLocalStudyTable(configuration.studyTemplate);
             setupGUI.setupLocalQueryFields();
             setupGUI.searchLocalStudiesEvent += searchLocalStudies;
             setupGUI.setupLocalSeriesTable(seriesTemplate);
             mainWindow.localStudiesPage.onLocalStudyClickedEvent += searchLocalSeries;
             mainWindow.localSeriesPage.onLocalSeriesClickedEvent += showLocalSeries;
+        }
+
+        void restartListener()
+        {
+            System.Diagnostics.Process[] listeners = System.Diagnostics.Process.GetProcessesByName("Listener");
+            if (listeners.Length != 0) foreach (var listener in listeners) listener.Kill();
+            var newListener = new System.Diagnostics.Process
+            {
+                StartInfo = {
+                    FileName = "Listener",
+                    Arguments = configuration.thisNodePort.ToString()+" "+configuration.keyStoreName
+                }
+            };
+            newListener.Start();
         }
 
         // ----------------------------study REMOTE query-------------------------------------------------
@@ -67,7 +79,7 @@ namespace PacsInterface
         List<Series> seriesResponses;
         void searchSeries(int studyNumber)
         {
-            seriesResponses = Query.searchSeries(configuration,studyResponses[studyNumber], "SeriesColumnsToShow.txt");
+            seriesResponses = Query.searchSeries(configuration,studyResponses[studyNumber]);
             setupGUI.addSeriesToTable(seriesResponses);
         }
 
@@ -90,7 +102,7 @@ namespace PacsInterface
         List<Study> localStudyResponses;
         void searchLocalStudies(Study studyTemplate)
         {
-            localStudyResponses = LocalQuery.searchLocalStudies(configuration, "StudyColumnsToShow.txt");
+            localStudyResponses = LocalQuery.searchLocalStudies(configuration);
             setupGUI.addLocalStudiesToTable(localStudyResponses);
         }
 

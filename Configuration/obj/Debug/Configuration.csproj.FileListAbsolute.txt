@@ -24,3 +24,5 @@ C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Conf
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.csproj.CopyComplete
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.exe
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\obj\Debug\Configuration.pdb
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\bin\Debug\PacsLibrary.dll
+C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\Configuration\bin\Debug\PacsLibrary.pdb

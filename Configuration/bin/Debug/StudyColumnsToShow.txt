@@ -1,4 +1,0 @@
-StudyDescription
-PatientID
-PatientName
-StudyDate

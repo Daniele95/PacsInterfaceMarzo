@@ -37,16 +37,16 @@ namespace PacsLibrary.Query
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        public DesktopNetworkStream(CurrentConfiguration configuration, bool noDelay, bool ignoreSslPolicyErrors)
+        public DesktopNetworkStream(Configuration configuration, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            this.RemoteHost = configuration.ip;
+            this.RemoteHost = configuration.host;
             this.RemotePort = configuration.port;
 
 #if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
 #else
-            this.tcpClient = new TcpClient(configuration.ip, configuration.port) { NoDelay = noDelay };
+            this.tcpClient = new TcpClient(configuration.host, configuration.port) { NoDelay = noDelay };
 #endif
 
             Stream stream = this.tcpClient.GetStream();
@@ -64,11 +64,12 @@ namespace PacsLibrary.Query
 
                 X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
                 store.Open(OpenFlags.ReadOnly);
+
                 var key = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false)[0];
 
                 var clientCertificateCollection = new X509CertificateCollection(new X509Certificate[] { trust,key });
                 
-                ssl.AuthenticateAsClient(configuration.ip, clientCertificateCollection, SslProtocols.Tls12, false);
+                ssl.AuthenticateAsClient(configuration.host, clientCertificateCollection, SslProtocols.Tls12, false);
 #endif
                 stream = ssl;
             }

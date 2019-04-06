@@ -1,5 +1,0 @@
-StudyDate
-Modality
-SeriesDescription
-SeriesInstanceUID
-StudyInstanceUID

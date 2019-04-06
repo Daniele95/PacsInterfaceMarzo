@@ -12,46 +12,16 @@ namespace PacsLibrary.Query
 {
     public class Query
     {
-        public static Study studyParametersToShow(string studyParametersToShow)
-        {
-            var studyTemplate = new Study();
-            bool studyInstanceUIDVisible = false;
-            foreach (var line in File.ReadAllLines("StudyColumnsToShow.txt"))
-            {
-                if (line != "StudyInstanceUID")
-                    studyTemplate.Add(new QueryParameter { name = line });
-                else
-                    studyInstanceUIDVisible = true;
-            }
-            studyTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
-            return studyTemplate;
-        }
-
-        public static Series seriesParametersToShow(string seriesParametersToShow)
-        {
-            Series seriesTemplate = new Series();
-            bool studyInstanceUIDVisible = false;
-            bool seriesInstanceUIDVisible = false;
-            foreach (var line in File.ReadAllLines(seriesParametersToShow))
-            {
-                if (line == "StudyInstanceUID") studyInstanceUIDVisible = true;
-                else if (line == "SeriesInstanceUID") seriesInstanceUIDVisible = true;
-                else seriesTemplate.Add(new QueryParameter { name = line });
-            }
-            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
-            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID", visible = seriesInstanceUIDVisible });
-            return seriesTemplate;
-        }
 
 
 
         /// <summary>
-        /// Launches a new query to the server indicated in <see cref="CurrentConfiguration"/>
+        /// Launches a new query to the server indicated in <see cref="Configuration"/>
         /// with the parameters indicated in <see cref="Study"/>
         /// </summary>
         /// <param name="configuration">Server and client configuration.</param>
         /// <param name="studyQuery">Parameters specifying the query.</param>
-        public static List<Study> searchStudies(CurrentConfiguration configuration,Study studyQuery)
+        public static List<Study> searchStudies(Configuration configuration,Study studyQuery)
         {
             var studyResponses = new List<Study>();
             // init find request
@@ -86,9 +56,9 @@ namespace PacsLibrary.Query
 
         }
 
-        public static List<Series> searchSeries(CurrentConfiguration configuration,Study studyResponse, string _seriesParametersToShow)
+        public static List<Series> searchSeries(Configuration configuration,Study studyResponse)
         {
-            var seriesParametersToShow = Query.seriesParametersToShow(_seriesParametersToShow);
+            var seriesParametersToShow = configuration.seriesTemplate;
             var seriesResponses = new List<Series>();
             // init find request
             DicomCFindRequest cfind = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
@@ -123,7 +93,7 @@ namespace PacsLibrary.Query
 
         }
 
-        public static void downloadSeries(CurrentConfiguration configuration, Series seriesResponse)
+        public static void downloadSeries(Configuration configuration, Series seriesResponse)
         {
             // init move request
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.getStudyInstanceUID(), seriesResponse.getSeriesInstanceUID());
@@ -154,7 +124,7 @@ namespace PacsLibrary.Query
         }
 
 
-        public static BitmapImage downloadSampleImage (CurrentConfiguration configuration,Series seriesResponse)
+        public static BitmapImage downloadSampleImage (Configuration configuration,Series seriesResponse)
         {
             BitmapImage img = new BitmapImage();
             try
@@ -171,7 +141,7 @@ namespace PacsLibrary.Query
             catch (Exception ec) { Console.WriteLine(ec.StackTrace); }
             return img;
         }
-        static string getImagesInSeries(CurrentConfiguration configuration,Series seriesResponse)
+        static string getImagesInSeries(Configuration configuration,Series seriesResponse)
         {
             var imageIDs = new List<string>();
 
@@ -210,7 +180,7 @@ namespace PacsLibrary.Query
             return SOPInstanceUID;
 
         }
-        static BitmapImage downloadImage(CurrentConfiguration configuration,Series seriesResponse, string SOPInstanceUID)
+        static BitmapImage downloadImage(Configuration configuration,Series seriesResponse, string SOPInstanceUID)
         {
             // init move request
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.getStudyInstanceUID(), seriesResponse.getSeriesInstanceUID(), SOPInstanceUID);

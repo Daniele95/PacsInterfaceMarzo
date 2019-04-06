@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PacsLibrary.Query
 {
-
+    [Serializable]
     public class QueryParameter
     {
         public string name { get; set; } = "";
@@ -21,7 +21,7 @@ namespace PacsLibrary.Query
             return DicomTag.Parse(tagNumber);
         }
     }
-
+    [Serializable]
     public class Study : List<QueryParameter>
     {
         // constructors to fill with query parameters
@@ -79,6 +79,7 @@ namespace PacsLibrary.Query
         }
     }
 
+    [Serializable]
     public class Series : Study
     {
         // constructors to fill with query parameters

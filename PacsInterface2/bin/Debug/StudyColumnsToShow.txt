@@ -1,5 +1,0 @@
-PatientName
-PatientID
-StudyDate
-StudyDescription
-AccessionNumber

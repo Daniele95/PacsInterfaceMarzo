@@ -14,9 +14,8 @@ namespace PacsLibrary.LocalQuery
 {
     public class LocalQuery
     {
-        public static List<Study> searchLocalStudies(CurrentConfiguration configuration, string studyParamsToShow)
+        public static List<Study> searchLocalStudies(Configuration configuration)
         {
-            var studyTemplate = PacsLibrary.Query.Query.studyParametersToShow(studyParamsToShow);
             string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
 
             // prepare to receive data
@@ -32,7 +31,7 @@ namespace PacsLibrary.LocalQuery
                         {
                             studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
                             studyRecord.Add(DicomTag.PatientID, patientRecord.GetSingleValue<string>(DicomTag.PatientID));
-                            Study myStudy = new Study(studyRecord, studyTemplate);
+                            Study myStudy = new Study(studyRecord, configuration.studyTemplate);
                             localStudyResponses.Add(myStudy);
                         }
                     }
@@ -41,9 +40,8 @@ namespace PacsLibrary.LocalQuery
 
         }
 
-        public static List<Series> searchLocalSeries(CurrentConfiguration configuration, Study study, string seriesParamsToShow )
+        public static List<Series> searchLocalSeries(Configuration configuration, Study study, string seriesParamsToShow )
         {
-            var seriesTemplate = Query.Query.seriesParametersToShow(seriesParamsToShow);
             string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
 
             // prepare to receive data
@@ -65,7 +63,7 @@ namespace PacsLibrary.LocalQuery
                                         studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
                                     seriesRecord.Add(DicomTag.StudyDate,
                                         studyRecord.GetSingleValue<string>(DicomTag.StudyDate));
-                                    Series mySeries = new Series(seriesRecord, seriesTemplate);
+                                    Series mySeries = new Series(seriesRecord, configuration.seriesTemplate);
                                     localSeriesResponses.Add(mySeries);
                                 }
                         }
@@ -75,7 +73,7 @@ namespace PacsLibrary.LocalQuery
 
         }
 
-        public static BitmapImage getThumb(CurrentConfiguration configuration,Series series)
+        public static BitmapImage getThumb(Configuration configuration,Series series)
         {
             var imageJpg = new BitmapImage();
             string seriesPath = series.getFullPath(configuration.fileDestination);

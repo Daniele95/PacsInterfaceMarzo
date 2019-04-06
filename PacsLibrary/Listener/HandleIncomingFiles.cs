@@ -45,8 +45,10 @@ namespace PacsLibrary.Listener
             string instanceNumber = "";
             request.Dataset.TryGetSingleValue(DicomTag.InstanceNumber, out instanceNumber);
 
+            var configuration = new Configuration("ServerConfig.txt");
+
             // Anonymize all files
-            if (bool.Parse(File.ReadAllLines("ServerConfig.txt")[3]))
+            if (configuration.anonymizeData)
             {
                 request.Dataset = request.Dataset.AddOrUpdate(DicomTag.PatientName,"random");
                 request.Dataset = request.Dataset.AddOrUpdate(DicomTag.PatientID, "random");
