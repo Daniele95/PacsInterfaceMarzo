@@ -1,19 +1,16 @@
 ﻿using Dicom;
 using Dicom.Imaging;
 using Dicom.Media;
-using Dicom.Network;
 using GUI;
+using PacsLibrary;
+using PacsLibrary.LocalQuery;
+using PacsLibrary.Query;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
-using System.Net.Sockets;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using PacsLibrary.Query;
 
 
 namespace PacsInterface
@@ -88,32 +85,12 @@ namespace PacsInterface
 
 
         }
-      
+
         //--------------------------- search LOCAL studies-------------------------------------------------
         List<Study> localStudyResponses;
         void searchLocalStudies(Study studyTemplate)
         {
-            string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
-
-            // prepare to receive data
-            localStudyResponses = new List<Study>();
-
-            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            {
-                var dicomDir = DicomDirectory.Open(fileStream);
-                if (dicomDir != null)
-                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
-                    {
-                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
-                        {
-                            studyRecord.Add(DicomTag.PatientName, patientRecord.GetSingleValue<string>(DicomTag.PatientName));
-                            studyRecord.Add(DicomTag.PatientID, patientRecord.GetSingleValue<string>(DicomTag.PatientID));
-                            Study myStudy = new Study(studyRecord, studyTemplate);
-                            localStudyResponses.Add(myStudy);
-                        }
-                    }
-            }
-
+            localStudyResponses = LocalQuery.searchLocalStudies(configuration, "StudyColumnsToShow.txt");
             setupGUI.addLocalStudiesToTable(localStudyResponses);
         }
 
@@ -121,34 +98,7 @@ namespace PacsInterface
         List<Series> localSeriesResponses;
         void searchLocalSeries(int index)
         {
-            string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
-
-            // prepare to receive data
-            localSeriesResponses = new List<Series>();
-
-            using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            {
-                var dicomDir = DicomDirectory.Open(fileStream);
-                if (dicomDir != null)
-                    foreach (var patientRecord in dicomDir.RootDirectoryRecordCollection)
-                    {
-                        foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
-                        {
-                            if (studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID) ==
-                                localStudyResponses[index].getStudyInstanceUID())
-                                foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
-                                {
-                                    seriesRecord.Add(DicomTag.StudyInstanceUID,
-                                        studyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
-                                    seriesRecord.Add(DicomTag.StudyDate,
-                                        studyRecord.GetSingleValue<string>(DicomTag.StudyDate));
-                                    Series mySeries = new Series(seriesRecord, seriesTemplate);
-                                    localSeriesResponses.Add(mySeries);
-                                }
-                        }
-                    }
-            }
-
+            localSeriesResponses = LocalQuery.searchLocalSeries(configuration, localStudyResponses[index],"SeriesColumnsToShow.txt");
             setupGUI.addLocalSeriesToTable(localSeriesResponses);
             addThumbs(localSeriesResponses);
         }
@@ -166,28 +116,9 @@ namespace PacsInterface
         {
             foreach (var series in seriesResponses)
             {
-                string seriesPath = series.getFullPath(configuration.fileDestination);
-                string thumbPath = Path.Combine(seriesPath, "thumb.jpg");
-                try
-                {
-                    if (!File.Exists(thumbPath))
-                    {
-                        var files = Directory.GetFiles(seriesPath).OrderBy(name => name).ToArray();
-                        string imagePath = files[(int)(files.Length / 2.0f)];
-                        var thumb = new DicomImage(imagePath);
-                        thumb.RenderImage().AsClonedBitmap().Save(Path.Combine(thumbPath));
-                    }
-                    var imageJpg = new BitmapImage();
-                    var uriSource = new Uri(Path.GetFullPath(thumbPath));
-                    imageJpg.BeginInit();
-                    imageJpg.CacheOption = BitmapCacheOption.OnLoad;
-                    imageJpg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                    imageJpg.UriSource = uriSource;
-                    imageJpg.EndInit();
+                var imageJpg = LocalQuery.getThumb(configuration, series);
+                setupGUI.addLocalSeriesImage(seriesResponses.IndexOf(series), imageJpg);
 
-                    setupGUI.addLocalSeriesImage(seriesResponses.IndexOf(series), imageJpg);
-                }
-                catch (Exception e) { }
             }
 
         }

@@ -27,6 +27,30 @@ namespace PacsLibrary.Query
             return studyTemplate;
         }
 
+        public static Series seriesParametersToShow(string seriesParametersToShow)
+        {
+            Series seriesTemplate = new Series();
+            bool studyInstanceUIDVisible = false;
+            bool seriesInstanceUIDVisible = false;
+            foreach (var line in File.ReadAllLines(seriesParametersToShow))
+            {
+                if (line == "StudyInstanceUID") studyInstanceUIDVisible = true;
+                else if (line == "SeriesInstanceUID") seriesInstanceUIDVisible = true;
+                else seriesTemplate.Add(new QueryParameter { name = line });
+            }
+            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
+            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID", visible = seriesInstanceUIDVisible });
+            return seriesTemplate;
+        }
+
+
+
+        /// <summary>
+        /// Launches a new query to the server indicated in <see cref="CurrentConfiguration"/>
+        /// with the parameters indicated in <see cref="Study"/>
+        /// </summary>
+        /// <param name="configuration">Server and client configuration.</param>
+        /// <param name="studyQuery">Parameters specifying the query.</param>
         public static List<Study> searchStudies(CurrentConfiguration configuration,Study studyQuery)
         {
             var studyResponses = new List<Study>();
@@ -52,7 +76,7 @@ namespace PacsLibrary.Query
             Debug.studyQuery(configuration, studyQuery);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
+                var _networkStream = new DesktopNetworkStream(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer(); }
@@ -60,22 +84,6 @@ namespace PacsLibrary.Query
             // arrange results in table
             return studyResponses;
 
-        }
-
-        public static Series seriesParametersToShow(string seriesParametersToShow)
-        {
-            Series seriesTemplate = new Series();
-            bool studyInstanceUIDVisible = false;
-            bool seriesInstanceUIDVisible = false;
-            foreach (var line in File.ReadAllLines(seriesParametersToShow))
-            {
-                if (line == "StudyInstanceUID") studyInstanceUIDVisible = true;
-                else if (line == "SeriesInstanceUID") seriesInstanceUIDVisible = true;
-                else seriesTemplate.Add(new QueryParameter { name = line });
-            }
-            seriesTemplate.Add(new QueryParameter { name = "StudyInstanceUID", visible = studyInstanceUIDVisible });
-            seriesTemplate.Add(new QueryParameter { name = "SeriesInstanceUID", visible = seriesInstanceUIDVisible });
-            return seriesTemplate;
         }
 
         public static List<Series> searchSeries(CurrentConfiguration configuration,Study studyResponse, string _seriesParametersToShow)
@@ -105,7 +113,7 @@ namespace PacsLibrary.Query
             Debug.seriesQuery(configuration, seriesParametersToShow);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
+                var _networkStream = new DesktopNetworkStream(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer(); }
@@ -114,7 +122,6 @@ namespace PacsLibrary.Query
             return seriesResponses;
 
         }
-
 
         public static void downloadSeries(CurrentConfiguration configuration, Series seriesResponse)
         {
@@ -138,7 +145,7 @@ namespace PacsLibrary.Query
             if (Directory.GetFiles(path).Length == 0)
             {
                 Debug.downloading(configuration);
-                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
+                var _networkStream = new DesktopNetworkStream(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
                 Debug.done();
             }
@@ -192,7 +199,7 @@ namespace PacsLibrary.Query
             Debug.imageQuery(configuration, seriesResponse);
             try
             {
-                var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
+                var _networkStream = new DesktopNetworkStream(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
             catch (Exception) { Debug.cantReachServer();Console.WriteLine("sono qui"); }
@@ -218,7 +225,7 @@ namespace PacsLibrary.Query
             foreach (FileInfo file in di.GetFiles()) file.Delete();
 
             // send query
-            var _networkStream = new DesktopNetworkStreamTls(configuration, true, true);
+            var _networkStream = new DesktopNetworkStream(configuration, true, true);
             client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
 
 
