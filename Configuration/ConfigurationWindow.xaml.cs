@@ -31,6 +31,7 @@ namespace Configuration
         public ConfigurationWindow()
         {
             InitializeComponent();
+            this.Closed += new EventHandler(ConfigurationWindow_Closed);
 
             configuration = new PacsLibrary.Configuration("ServerConfig.txt");
 
@@ -43,8 +44,10 @@ namespace Configuration
             destinationBox.Text = configuration.fileDestination;
 
             useTlsCheckBox.IsChecked = configuration.useTls;
-            trustStorePathField.Text = configuration.trustStorePath;
-            trustStorePasswordField.Text = configuration.trustStorePassword;
+            KeyStorePathField.Text = configuration.keyPath;
+            keyStorePasswordField.Text = configuration.keyPassword;
+            trustStorePathField.Text = configuration.certificatePath;
+            trustStorePasswordField.Text = configuration.certificatePassword;
             //
 
             // show list of known servers
@@ -76,8 +79,8 @@ namespace Configuration
                 CheckBox checkBox = new CheckBox();
                 checkBox.Content = property.name;
                 checkBox.IsChecked = property.visible;
-                checkBox.Checked += (a, b) => { property.visible = true; configuration.write(); };
-                checkBox.Unchecked += (a, b) => { property.visible = false; configuration.write(); };
+                checkBox.Checked += (a, b) => { property.visible = true; };
+                checkBox.Unchecked += (a, b) => { property.visible = false; };
                 studyPanel.Children.Add(checkBox);
                 StudyProperties.Add(checkBox);
             }
@@ -88,12 +91,21 @@ namespace Configuration
                 CheckBox checkBox = new CheckBox();
                 checkBox.Content = property.name;
                 checkBox.IsChecked = property.visible;
-                checkBox.Checked += (a, b) => { property.visible = true; configuration.write(); };
-                checkBox.Unchecked += (a, b) => { property.visible = false; configuration.write(); };
+                checkBox.Checked += (a, b) => { property.visible = true;  };
+                checkBox.Unchecked += (a, b) => { property.visible = false; };
                 seriesPanel.Children.Add(checkBox);
                 SeriesProperties.Add(checkBox);
             }
             //
+        }
+
+        private void ConfigurationWindow_Closed(object sender, EventArgs e)
+        {
+            configuration.keyPath = KeyStorePathField.Text;
+            configuration.keyPassword=keyStorePasswordField.Text;
+            configuration.certificatePath = trustStorePathField.Text;
+            configuration.certificatePassword = trustStorePasswordField.Text;
+            configuration.write();
         }
 
         private void setThisNodesName(object sender, RoutedEventArgs e)
@@ -111,7 +123,6 @@ namespace Configuration
                 {
                     configuration.thisNodeAET = thisNodeAET;
                     configuration.thisNodePort = int.Parse(thisNodePort);
-                    configuration.write();
                     thisNodesName.Text = thisNodeAET + " " + thisNodePort;
                 }
                 popup.Close();
@@ -279,14 +290,12 @@ namespace Configuration
                 configuration.host = listViewItem.ip;
                 configuration.port = int.Parse(listViewItem.port);
                 configuration.AET = listViewItem.AET;
-                configuration.write();
             }
         }
 
         private void anonymizeDataCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             configuration.anonymizeData = bool.Parse(anonymizeDataCheckbox.IsChecked.ToString());
-            configuration.write();
         }
 
         private void browseButton_Click(object sender, RoutedEventArgs e)
@@ -298,7 +307,6 @@ namespace Configuration
             if (configuration != null)
             {
                 configuration.fileDestination = destinationBox.Text;
-                configuration.write();
             }
         }
 
@@ -319,43 +327,7 @@ namespace Configuration
         private void useTlsCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             configuration.useTls = bool.Parse(useTlsCheckBox.IsChecked.ToString());
-            configuration.write();
         }
-
-        private void setKeyStore(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (configuration != null)
-                {
-                    X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-                    store.Open(OpenFlags.ReadWrite);
-                    var oldCerts = store.Certificates.Find(X509FindType.FindBySubjectName, configuration.keyStoreName, false);
-                    foreach (var cert2 in oldCerts) MessageBox.Show(configuration.keyStoreName + " " +cert2.Subject);
-                    if(oldCerts != null && oldCerts.Count>0) store.Remove(oldCerts[0]);
-                    foreach (var myCert in store.Certificates) { store.Remove(myCert); MessageBox.Show("rimuovo certificato"); }
-                    try
-                    {
-                        X509Certificate2 newCert = new X509Certificate2(KeyStorePathField.Text, keyStorePasswordField.Text);
-                        store.Add(newCert);
-                        // check this line
-                        configuration.keyStoreName = newCert.GetNameInfo(X509NameType.SimpleName, false).Split(' ')[0];
-                        configuration.write();
-                    }
-                    catch (Exception) { MessageBox.Show("Incorrect certificate path or password"); }
-                }
-            }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-        }
-
-        private void setTrustStore(object sender, RoutedEventArgs e)
-        {
-            if (configuration != null)
-            {
-                configuration.trustStorePath = trustStorePathField.Text;
-                configuration.trustStorePassword = trustStorePasswordField.Text;
-                configuration.write();
-            }
-        }
+        
     }
 }

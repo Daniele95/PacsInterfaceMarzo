@@ -13,12 +13,8 @@ namespace Listener
     {
         static void Main(string[] args)
         {
-            Console.Title = "Listener";
-            int port = int.Parse(args[0]);
-            string keyStoreName = args[1];
-            DicomServer.Create<CStoreSCP>(port, args[1]);
-            Debug.startedListening(port);
-            while (true) { }
+            Configuration configuration = new Configuration("ServerConfig.txt");
+            PacsLibrary.Listener.Listener.init(configuration);
         }
     }
 }

@@ -42,8 +42,8 @@ namespace PacsLibrary.Listener
             string path = File.ReadAllLines("pathForDownload.txt")[0];
 
             // get parameters
-            string instanceNumber = "";
-            request.Dataset.TryGetSingleValue(DicomTag.InstanceNumber, out instanceNumber);
+            string SOPInstanceUID = "";
+            request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
 
             var configuration = new Configuration("ServerConfig.txt");
 
@@ -56,7 +56,7 @@ namespace PacsLibrary.Listener
             }
             
             // save
-            string filePath = Path.Combine(path, instanceNumber + ".dcm");
+            string filePath = Path.Combine(path, SOPInstanceUID + ".dcm");
             request.File.Save(filePath);
 
             updateDatabase();
@@ -64,7 +64,8 @@ namespace PacsLibrary.Listener
 
         private static void updateDatabase()
         {
-            string fileDestination = File.ReadAllLines("ServerConfig.txt")[6];
+            var configuration = new Configuration("ServerConfig.txt");
+            string fileDestination = configuration.fileDestination;
             string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
 
             using (var fileStream = new FileStream(dicomDirPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))

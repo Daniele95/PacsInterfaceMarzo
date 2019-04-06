@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Configuration.exe" size="36352">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Configuration.exe" size="34816">
       <assemblyIdentity name="Configuration" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>5HfAVzgg0/XEiFPNxxvacnsygj0z4LJTOz+nx/ia+/k=</dsig:DigestValue>
+        <dsig:DigestValue>GLwnQ5hEjH4yDRyJ9mpsctTMB4hl3ebJN4cl7ZM7/+k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -85,7 +85,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>AqnVQxRzCpv7Nx5PSsJt1gEXgaqaUVl8lc1cxXHZSgw=</dsig:DigestValue>
+        <dsig:DigestValue>M6lEr1QvM4keQI/ii/OIm19Dw30/jb1HKZCMMPd9eWI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -109,19 +109,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ZfSxtEhDzHFte6mvWqeagtLn8FNRqRQUt/5wHCMTZcE=</dsig:DigestValue>
+        <dsig:DigestValue>MSZuKXfq9IOOjDWkQYFiad5+z2FlJB5RLpcE7iCjeLo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PacsLibrary.dll" size="29696">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PacsLibrary.dll" size="31232">
       <assemblyIdentity name="PacsLibrary" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>8Le6IbbCYTUcqRFLye19pLTnj9CLei+RN6OO3kssvQ0=</dsig:DigestValue>
+        <dsig:DigestValue>6sBv6FdMMuQAdDTEDHle6UzK10YQfLUyszcUlxop7Uc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PacsLibrary
 {
@@ -12,19 +13,20 @@ namespace PacsLibrary
     {
         string configurationFile;
 
-        public string host { get; set; }
-        public int port { get; set; }
-        public string AET { get; set; }
+        public string host { get; set; } = "dicomserver.co.uk";
+        public int port { get; set; } = 104;
+        public string AET { get; set; } = "ANY";
 
         public bool anonymizeData { get; set; } = true;
         public string thisNodeAET { get; set; } = "ANATOMAGETABLE";
         public int thisNodePort { get; set; } = 104;
         public string fileDestination { get; set; } = "C:/Dicom";
-        public bool useTls { get; set; } = false;
 
-        public string keyStoreName { get; set; }
-        public string trustStorePath { get; set; }
-        public string trustStorePassword { get; set; }
+        public bool useTls { get; set; } = false;
+        public string certificatePath { get; set; } = "C:/trustStore.p12";
+        public string certificatePassword { get; set; } = "password";
+        public string keyPath { get; set; } = "C:/keyStore.p12";
+        public string keyPassword { get; set; } = "password";
 
         public Study studyTemplate { get; set; } = new Study {
             new QueryParameter{ name= "StudyInstanceUID",   value="", visible=true },
@@ -36,7 +38,6 @@ namespace PacsLibrary
             new QueryParameter{ name= "StudyDescription",   value="", visible=true },
             new QueryParameter{ name= "AccessionNumber",    value="", visible=true },
         };
-
         public Series seriesTemplate { get; set; } = new Series {
             new QueryParameter{ name= "SeriesDescription",  value="", visible=true },
             new QueryParameter{ name= "StudyDate",          value="", visible=true },
@@ -63,7 +64,7 @@ namespace PacsLibrary
             this.host = host; this.port = port; this.AET = AET;
             this.anonymizeData = anonymizeData; this.thisNodeAET = thisNodeAET;
             this.thisNodePort = thisNodePort; this.fileDestination = fileDestination;
-            this.keyStoreName = keyStoreName; this.trustStorePath = trustStorePath; this.trustStorePassword = trustStorePassword;
+            this.certificatePath = keyStoreName; this.keyPath = trustStorePath; this.keyPassword = trustStorePassword;
         }
 
         public Configuration(string configurationFile)
@@ -77,6 +78,7 @@ namespace PacsLibrary
 
         public void update()
         {
+            if (!File.Exists(configurationFile)) write();
             var stream = new FileStream(configurationFile, FileMode.Open, FileAccess.Read);
             var newConfig = (Configuration)formatter.Deserialize(stream);
             foreach (var property in this.GetType().GetProperties())
@@ -90,6 +92,7 @@ namespace PacsLibrary
             formatter.Serialize(stream, this);
             stream.Close();
         }
+
     }
 }
 

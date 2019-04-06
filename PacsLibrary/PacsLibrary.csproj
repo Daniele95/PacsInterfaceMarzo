@@ -52,6 +52,7 @@
     <Compile Include="Listener\Debug.cs" />
     <Compile Include="Listener\HandleIncomingFiles.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Listener\InitListener.cs" />
     <Compile Include="LocalQuery\LocalQuery.cs" />
     <Compile Include="Query\Debug.cs" />
     <Compile Include="Query\DesktopNetworkStream.cs" />

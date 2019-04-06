@@ -61,7 +61,7 @@ namespace PacsInterface
             {
                 StartInfo = {
                     FileName = "Listener",
-                    Arguments = configuration.thisNodePort.ToString()+" "+configuration.keyStoreName
+                    Arguments = configuration.thisNodePort.ToString()+" "+configuration.certificatePath
                 }
             };
             newListener.Start();
