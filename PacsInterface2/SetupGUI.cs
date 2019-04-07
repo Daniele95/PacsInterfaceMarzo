@@ -28,7 +28,9 @@ namespace PacsInterface
             downloadPage = mainWindow.downloadPage;
             localStudiesPage = mainWindow.localStudiesPage;
             localSeriesPage = mainWindow.localSeriesPage;
+            queryPage.executeQueryButton.Click += onButtonPressedHandler;
         }
+
 
         //----------------------------------------- setup query page----------------------------------------
         Study studyTemplate;
@@ -90,31 +92,40 @@ namespace PacsInterface
         {
             if (e.Key == Key.Enter)
             {
-                int i = 0;
-                foreach (var studyParameter in studyTemplate)
+                fillQueryFields();
+            }
+        }
+        private void onButtonPressedHandler(object sender, RoutedEventArgs e)
+        {
+            fillQueryFields();
+        }
+        void fillQueryFields()
+        {
+            int i = 0;
+            foreach (var studyParameter in studyTemplate)
+            {
+                if (queryFields[i].GetType() == typeof(TextBox))
                 {
-                    if (queryFields[i].GetType() == typeof(TextBox))
-                    {
-                        studyParameter.value = (queryFields[i] as TextBox).Text;
-                    }
-                    if (queryFields[i].GetType() == typeof(DatePicker))
-                    {
-                        var controlMin = (queryFields[i] as DatePicker).SelectedDate;
-                        var controlMax = (queryFields[i + 1] as DatePicker).SelectedDate;
-                        if (controlMin != null && controlMax != null)
-                            studyParameter.value = controlMin.Value.ToString("yyyyMMdd") + "-" + controlMax.Value.ToString("yyyyMMdd");
-                        else if (controlMin == null && controlMax != null)
-                            studyParameter.value = controlMax.Value.ToString("yyyyMMdd") + "-" + controlMax.Value.AddDays(1).ToString("yyyyMMdd");
-                        else if (controlMin != null && controlMax == null)
-                            studyParameter.value = controlMin.Value.ToString("yyyyMMdd") + "-" + controlMin.Value.AddDays(1).ToString("yyyyMMdd");
-                        else if (controlMin == null && controlMax == null)
-                            studyParameter.value = new DateTime(1900, 1, 1).ToString("yyyyMMdd") + "-" + DateTime.Now.ToString("yyyyMMdd");
-                        i++;
-                    }
+                    studyParameter.value = (queryFields[i] as TextBox).Text;
+                }
+                if (queryFields[i].GetType() == typeof(DatePicker))
+                {
+                    var controlMin = (queryFields[i] as DatePicker).SelectedDate;
+                    var controlMax = (queryFields[i + 1] as DatePicker).SelectedDate;
+                    if (controlMin != null && controlMax != null)
+                        studyParameter.value = controlMin.Value.ToString("yyyyMMdd") + "-" + controlMax.Value.ToString("yyyyMMdd");
+                    else if (controlMin == null && controlMax != null)
+                        studyParameter.value = controlMax.Value.ToString("yyyyMMdd") + "-" + controlMax.Value.AddDays(1).ToString("yyyyMMdd");
+                    else if (controlMin != null && controlMax == null)
+                        studyParameter.value = controlMin.Value.ToString("yyyyMMdd") + "-" + controlMin.Value.AddDays(1).ToString("yyyyMMdd");
+                    else if (controlMin == null && controlMax == null)
+                        studyParameter.value = new DateTime(1900, 1, 1).ToString("yyyyMMdd") + "-" + DateTime.Now.ToString("yyyyMMdd");
                     i++;
                 }
-                searchStudiesEvent(studyTemplate);
+                i++;
             }
+            searchStudiesEvent(studyTemplate);
+
         }
 
         internal void addStudiesToTable(List<Study> studyResponses)
@@ -169,7 +180,7 @@ namespace PacsInterface
         }
         internal void setupLocalQueryFields()
         {
-            var button = new Button { Content="Show" };
+            var button = new Button { Content = "Show" };
             button.Click += onLocalSearchStudies;
             localStudiesPage.grid.Children.Add(button);
         }

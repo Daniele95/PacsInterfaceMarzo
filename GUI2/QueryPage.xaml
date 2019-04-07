@@ -8,7 +8,7 @@
       Title="QueryPage">
 
     <Grid>
-        <ListView x:Name="listView" x:FieldModifier="public" HorizontalAlignment="Left" Height="238" Margin="52,112,0,0" VerticalAlignment="Top" Width="693">
+        <ListView x:Name="listView" x:FieldModifier="public" HorizontalAlignment="Left" Height="238" Margin="52,138,0,0" VerticalAlignment="Top" Width="693">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <EventSetter Event="PreviewMouseDoubleClick" Handler="onStudyClicked" />
@@ -32,5 +32,6 @@
             </Grid.RowDefinitions>
         </Grid>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="335,10,0,0" TextWrapping="Wrap" Text="QUERY REMOTE SERVER" VerticalAlignment="Top"/>
+        <Button x:Name="executeQueryButton" x:FieldModifier="public" Content="Execute Query" HorizontalAlignment="Left" Margin="354,113,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Page>

@@ -20,7 +20,6 @@ namespace PacsInterface
         // configure server access, init GUI, init listener
         PacsLibrary.Configuration configuration;
         SetupGUI setupGUI;
-        Series seriesTemplate;
         internal Program(MainWindow mainWindow)
         {
             // configure server info
@@ -38,8 +37,7 @@ namespace PacsInterface
             mainWindow.queryPage.onStudyClickedEvent += searchSeries;
 
             // setup download page
-            seriesTemplate = configuration.seriesTemplate;
-            setupGUI.setupSeriesTable(seriesTemplate);
+            setupGUI.setupSeriesTable(configuration.seriesTemplate);
             mainWindow.downloadPage.onSeriesClickedEvent += downloadSeries;
 
             mainWindow.downloadPage.onThumbClickedEvent += onThumbClicked;
@@ -48,7 +46,7 @@ namespace PacsInterface
             setupGUI.setupLocalStudyTable(configuration.studyTemplate);
             setupGUI.setupLocalQueryFields();
             setupGUI.searchLocalStudiesEvent += searchLocalStudies;
-            setupGUI.setupLocalSeriesTable(seriesTemplate);
+            setupGUI.setupLocalSeriesTable(configuration.seriesTemplate);
             mainWindow.localStudiesPage.onLocalStudyClickedEvent += searchLocalSeries;
             mainWindow.localSeriesPage.onLocalSeriesClickedEvent += showLocalSeries;
         }
@@ -71,7 +69,7 @@ namespace PacsInterface
         List<Study> studyResponses;
         void searchStudies(Study studyQuery)
         {
-            studyResponses = Query.searchStudies(configuration,studyQuery);
+            studyResponses = Query.CFINDStudies(configuration,studyQuery);
             setupGUI.addStudiesToTable(studyResponses);
         }
 
@@ -79,14 +77,15 @@ namespace PacsInterface
         List<Series> seriesResponses;
         void searchSeries(int studyNumber)
         {
-            seriesResponses = Query.searchSeries(configuration,studyResponses[studyNumber]);
+            seriesResponses = Query.CFINDSeries(configuration,studyResponses[studyNumber]);
             setupGUI.addSeriesToTable(seriesResponses);
         }
 
         // series download
         void downloadSeries(int seriesNumber)
         {
-            Query.downloadSeries(configuration,seriesResponses[seriesNumber]);
+            string seriesPath = Query.CMOVESeries(configuration,seriesResponses[seriesNumber]);
+            MessageBox.Show(Debug.seriesPathCopied(seriesPath));
         }
 
         // download sample image from series
@@ -94,8 +93,6 @@ namespace PacsInterface
         {
             BitmapImage img = Query.downloadSampleImage(configuration,seriesResponses[seriesNumber]);
             setupGUI.addImage(seriesNumber, img);
-
-
         }
 
         //--------------------------- search LOCAL studies-------------------------------------------------
@@ -110,7 +107,7 @@ namespace PacsInterface
         List<Series> localSeriesResponses;
         void searchLocalSeries(int index)
         {
-            localSeriesResponses = LocalQuery.searchLocalSeries(configuration, localStudyResponses[index],"SeriesColumnsToShow.txt");
+            localSeriesResponses = LocalQuery.searchLocalSeries(configuration, localStudyResponses[index]);
             setupGUI.addLocalSeriesToTable(localSeriesResponses);
             addThumbs(localSeriesResponses);
         }
@@ -118,8 +115,7 @@ namespace PacsInterface
         {
             string fullSeriesPath = localSeriesResponses[index].getFullPath(configuration.fileDestination);
             System.Windows.Forms.Clipboard.SetDataObject(fullSeriesPath, true);
-            MessageBox.Show("Full series path: " + Environment.NewLine + fullSeriesPath +
-                Environment.NewLine + "Copied into clipboard");
+            MessageBox.Show(Debug.seriesPathCopied(fullSeriesPath));
 
         }
 

@@ -8,6 +8,9 @@ using System.Threading;
 
 namespace PacsLibrary.Listener
 {
+    /// <summary>
+    /// Implements the main methods used by the CStoreSCP Listener to handle incoming DICOM files.
+    /// </summary>
     class HandleIncomingFiles
     {
         internal static DicomCStoreResponse onCStoreRequest(DicomCStoreRequest request)

@@ -40,7 +40,7 @@ namespace PacsLibrary.LocalQuery
 
         }
 
-        public static List<Series> searchLocalSeries(Configuration configuration, Study study, string seriesParamsToShow )
+        public static List<Series> searchLocalSeries(Configuration configuration, Study study )
         {
             string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
 

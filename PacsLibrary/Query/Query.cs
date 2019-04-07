@@ -12,16 +12,14 @@ namespace PacsLibrary.Query
 {
     public class Query
     {
-
-
-
         /// <summary>
-        /// Launches a new query to the server indicated in <see cref="Configuration"/>
-        /// with the parameters indicated in <see cref="Study"/>
+        /// Queries the server indicated in <see cref="Configuration"/>
+        /// with the query parameters indicated in <see cref="Study"/>. 
+        /// Implements the DICOM C-FIND command at STUDY Level.
         /// </summary>
         /// <param name="configuration">Server and client configuration.</param>
         /// <param name="studyQuery">Parameters specifying the query.</param>
-        public static List<Study> searchStudies(Configuration configuration,Study studyQuery)
+        public static List<Study> CFINDStudies(Configuration configuration,Study studyQuery)
         {
             var studyResponses = new List<Study>();
             // init find request
@@ -56,7 +54,15 @@ namespace PacsLibrary.Query
 
         }
 
-        public static List<Series> searchSeries(Configuration configuration,Study studyResponse)
+        /// <summary>
+        /// Queries the server indicated in <see cref="Configuration"/>
+        /// for the various Series contained 
+        /// in the specified <see cref="Study"/>. 
+        /// Implements the DICOM C-FIND command at SERIES Level.
+        /// </summary>
+        /// <param name="configuration">Server and client configuration.</param>
+        /// <param name="studyQuery">Parameters specifying the query.</param>
+        public static List<Series> CFINDSeries(Configuration configuration,Study studyResponse)
         {
             var seriesParametersToShow = configuration.seriesTemplate;
             var seriesResponses = new List<Series>();
@@ -93,7 +99,15 @@ namespace PacsLibrary.Query
 
         }
 
-        public static void downloadSeries(Configuration configuration, Series seriesResponse)
+        /// <summary>
+        /// Asks the server indicated in <see cref="Configuration"/> 
+        /// to send the specified <see cref="Series"/>.
+        /// Implements the DICOM C-MOVE Command at SERIES level.
+        /// </summary>
+        /// <param name="configuration">Server and Client configuration.</param>
+        /// <param name="seriesResponse">Parameters specifying the query.</param>
+        /// <returns>The path where the series has been saved.</returns>
+        public static string CMOVESeries(Configuration configuration, Series seriesResponse)
         {
             // init move request
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.getStudyInstanceUID(), seriesResponse.getSeriesInstanceUID());
@@ -120,20 +134,26 @@ namespace PacsLibrary.Query
                 Debug.done();
             }
             else Console.WriteLine("File is already present in database.");
-
+            return path;
         }
 
-
+        /// <summary>
+        /// Downloads an image representative of a given <see cref="Series"/>. 
+        /// In this case, the image in the middle of the Series.
+        /// </summary>
+        /// <param name="configuration">Server and Client configuration.</param>
+        /// <param name="seriesResponse">Parameters specifying the query.</param>
+        /// <returns>The downloaded image as a BitmapImage.</returns>
         public static BitmapImage downloadSampleImage (Configuration configuration,Series seriesResponse)
         {
             BitmapImage img = new BitmapImage();
             try
             {
-                string SOPInstanceUID = getImagesInSeries(configuration, seriesResponse);
+                string SOPInstanceUID = CFINDImagesInSeries(configuration, seriesResponse);
                 if (SOPInstanceUID != "")
                 {
                     Debug.downloadingImage(configuration, SOPInstanceUID);
-                    img = downloadImage(configuration, seriesResponse, SOPInstanceUID);
+                    img = CMOVEImage(configuration, seriesResponse, SOPInstanceUID);
                     Debug.done();
                 }
 
@@ -141,7 +161,15 @@ namespace PacsLibrary.Query
             catch (Exception ec) { Console.WriteLine(ec.StackTrace); }
             return img;
         }
-        static string getImagesInSeries(Configuration configuration,Series seriesResponse)
+
+        /// <summary>
+        /// Finds the image in the middle of a given <see cref="Series"/>.
+        /// Implements the DICOM C-FIND command at IMAGE level.
+        /// </summary>
+        /// <param name="configuration">Server and Client configuration.</param>
+        /// <param name="seriesResponse">Parameters specifying the query.</param>
+        /// <returns>The SOPInstanceUID of the image representative of the series.</returns>
+        static string CFINDImagesInSeries(Configuration configuration,Series seriesResponse)
         {
             var imageIDs = new List<string>();
 
@@ -180,7 +208,17 @@ namespace PacsLibrary.Query
             return SOPInstanceUID;
 
         }
-        static BitmapImage downloadImage(Configuration configuration,Series seriesResponse, string SOPInstanceUID)
+
+        /// <summary>
+        /// Asks the server indicated in <see cref="Configuration"/> to send the image specified
+        /// in the <see cref="string"/>, representative of the <see cref="Series"/>.
+        /// Implements DICOM C-MOVE Command at IMAGE level.
+        /// </summary>
+        /// <param name="configuration">Server and Client configuration.</param>
+        /// <param name="seriesResponse">Parameters specifying the query.</param>
+        /// <param name="SOPInstanceUID">SOPInstanceUID specifying the query.</param>
+        /// <returns>The .dcm image representative of the series as a BitmapImage.</returns>
+        static BitmapImage CMOVEImage(Configuration configuration,Series seriesResponse, string SOPInstanceUID)
         {
             // init move request
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.getStudyInstanceUID(), seriesResponse.getSeriesInstanceUID(), SOPInstanceUID);
@@ -215,6 +253,5 @@ namespace PacsLibrary.Query
             File.Delete("singleImage.txt");
             return image;
         }
-
     }
 }

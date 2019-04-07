@@ -9,24 +9,43 @@ using System.Threading.Tasks;
 
 namespace PacsLibrary.Query
 {
+    /// <summary>
+    /// A Query parameter used to specify a query, identified by name (its DICOM tag, eg "PatientName"),
+    /// value (eg "Doe^Pierre"), and visibility in the query results.
+    /// </summary>
     [Serializable]
     public class QueryParameter
     {
         public string name { get; set; } = "";
         public string value { get; set; } = "";
         public bool visible { get; set; } = true;
+
+        /// <summary>
+        /// Given the DICOM tag as string (the QueryParameter name), 
+        /// returns the corresponding value in the DicomTag enumerator.
+        /// </summary>
+        /// <returns>An element of the DicomTag enumerator.</returns>
         public DicomTag getTag()
         {
             string tagNumber = typeof(DicomTag).GetField(name).GetValue(null).ToString();
             return DicomTag.Parse(tagNumber);
         }
     }
+
+    /// <summary>
+    /// Contains query parameters for a STUDY level query.
+    /// A Study of a certain patient is an ensemble of medical images (Series).
+    /// </summary>
     [Serializable]
     public class Study : List<QueryParameter>
     {
-        // constructors to fill with query parameters
         public Study() { }
-        // constructor from query results
+
+        /// <summary>
+        /// Fills this Study with the <see cref="DicomDataset"/> returned as query result
+        /// </summary>
+        /// <param name="dataset">Dataset containing the result of the STUDY level query.</param>
+        /// <param name="studyQuery">List of empty QueryParameter indicating which QueryParameter to extract from the dataset.</param>
         public Study(DicomDataset dataset, Study studyQuery)
         {
             dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
@@ -55,6 +74,9 @@ namespace PacsLibrary.Query
 
         protected string StudyInstanceUID = "";
 
+        /// <summary>
+        /// Returns the StudyInstanceUID of this Study - DICOM tag (0020,000D).
+        /// </summary>
         public string getStudyInstanceUID()
         {
             if (StudyInstanceUID == "")
@@ -65,6 +87,12 @@ namespace PacsLibrary.Query
             }
             return StudyInstanceUID;
         }
+
+        /// <summary>
+        /// Gets the list of QueryParameters casted as a dynamic Expando Object,
+        /// useful to insert in a table.
+        /// </summary>
+        /// <returns>An Expando Object corresponding to this Study.</returns>
         public dynamic getDynamic()
         {
             IDictionary<string, object> expando = new ExpandoObject();
@@ -72,24 +100,42 @@ namespace PacsLibrary.Query
                 expando[studyParameter.name] = studyParameter.value;
             return expando as dynamic;
         }
-        public void print()
+
+        public void ToString()
         {
             foreach (var par in this)
                 Console.WriteLine(par.name + " " + par.value + Environment.NewLine);
         }
     }
 
+    /// <summary>
+    /// Contains query parameters for a SERIES level query.
+    /// A Series is a 2d or 3d medical image stored in the PACS, can be the result of a
+    /// Magnetic Resonance, PET, TAC, et cetera.
+    /// It can contain from one to a hundred or more medical (.dcm) images, which are
+    /// the "slices" composing the full 3d image.
+    /// In other cases it can contain all other kinds of medical documents,
+    /// always store as .dcm images.
+    /// </summary>
     [Serializable]
     public class Series : Study
     {
-        // constructors to fill with query parameters
         public Series() { }
-        // constructor from query results
+
+        /// <summary>
+        /// Fills this Series with the <see cref="DicomDataset"/> returned as query result
+        /// </summary>
+        /// <param name="dataset">Dataset containing the result of the SERIES level query.</param>
+        /// <param name="seriesQuery">List of empty QueryParameter indicating which QueryParameter to extract from the dataset.</param>
         public Series(DicomDataset dataset, Series seriesQuery) : base(dataset, seriesQuery) { }
 
         protected string SeriesInstanceUID = "";
+
         protected string StudyDate = "";
 
+        /// <summary>
+        /// Returns the SeriesInstanceUID of this Series - DICOM tag (0020,000E).
+        /// </summary>
         public string getSeriesInstanceUID()
         {
             if (SeriesInstanceUID == "")
@@ -100,6 +146,12 @@ namespace PacsLibrary.Query
             }
             return SeriesInstanceUID;
         }
+
+        /// <summary>
+        /// Initializes the StudyInstanceUID of this Series, obtained from the father Study
+        /// in the hierarchical DICOM query model.
+        /// </summary>
+        /// <param name="incomingStudy">The Study containing this Series in the hierarchical DICOM query model.</param>
         public void setStudyInstanceUID(Study incomingStudy)
         {
             StudyInstanceUID = incomingStudy.getStudyInstanceUID();
@@ -109,6 +161,14 @@ namespace PacsLibrary.Query
                     queryParameter.value = StudyInstanceUID;
         }
 
+        /// <summary>
+        /// Gets the destination where this Series will be stored, when downloaded.
+        /// The path depends on the StudyDate (if anonymized, the date of the download), plus 
+        /// its StudyInstanceUID and SeriesInstanceUID. Each .dcm image is then saved in this path with its 
+        /// SOPinstanceUID.
+        /// </summary>
+        /// <param name="fileDestination">The destination of the DICOM files specified by the user in the configurator.</param>
+        /// <returns>The calculated path for saving this Series.</returns>
         public string getFullPath(string fileDestination)
         {
             return Path.Combine(
@@ -120,6 +180,9 @@ namespace PacsLibrary.Query
                 this.getSeriesInstanceUID());
         }
 
+        /// <summary>
+        /// Returns the StudyDate of this Series - DICOM tag (0008,0020).
+        /// </summary>
         public string getStudyDate()
         {
             if (StudyDate == "")

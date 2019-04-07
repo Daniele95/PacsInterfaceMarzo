@@ -9,7 +9,9 @@ namespace PacsLibrary.Listener
         public static void init(Configuration configuration)
         {
             Console.Title = "Listener";
-            string certificateName = addTlsCertificate(configuration.certificatePath, configuration.certificatePassword);
+            string certificateName = "";
+            if(configuration.useTls)
+                certificateName = addTlsCertificate(configuration.certificatePath, configuration.certificatePassword);
             DicomServer.Create<CStoreSCP>(configuration.thisNodePort, certificateName);
             Debug.startedListening(configuration.thisNodePort);
             while (true) { }
