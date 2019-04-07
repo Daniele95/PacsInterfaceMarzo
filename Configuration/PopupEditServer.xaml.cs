@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Configuration
+namespace ConfiguratorWindow
 {
     /// <summary>
     /// Interaction logic for AddServer.xaml

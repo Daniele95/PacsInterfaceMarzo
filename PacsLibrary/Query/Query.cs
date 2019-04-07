@@ -7,10 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using PacsLibrary.Configurator;
 
 namespace PacsLibrary.Query
 {
-    public class Query
+   
+
+    class Query
     {
         /// <summary>
         /// Queries the server indicated in <see cref="Configuration"/>
@@ -19,7 +22,7 @@ namespace PacsLibrary.Query
         /// </summary>
         /// <param name="configuration">Server and client configuration.</param>
         /// <param name="studyQuery">Parameters specifying the query.</param>
-        public static List<Study> CFINDStudies(Configuration configuration,Study studyQuery)
+        public static List<Study> CFINDStudies(Configuration configuration, Study studyQuery)
         {
             var studyResponses = new List<Study>();
             // init find request
@@ -62,7 +65,7 @@ namespace PacsLibrary.Query
         /// </summary>
         /// <param name="configuration">Server and client configuration.</param>
         /// <param name="studyQuery">Parameters specifying the query.</param>
-        public static List<Series> CFINDSeries(Configuration configuration,Study studyResponse)
+        public static List<Series> CFINDSeries(Configuration configuration, Study studyResponse)
         {
             var seriesParametersToShow = configuration.seriesTemplate;
             var seriesResponses = new List<Series>();
@@ -144,7 +147,7 @@ namespace PacsLibrary.Query
         /// <param name="configuration">Server and Client configuration.</param>
         /// <param name="seriesResponse">Parameters specifying the query.</param>
         /// <returns>The downloaded image as a BitmapImage.</returns>
-        public static BitmapImage downloadSampleImage (Configuration configuration,Series seriesResponse)
+        public static BitmapImage downloadSampleImage(Configuration configuration, Series seriesResponse)
         {
             BitmapImage img = new BitmapImage();
             try
@@ -169,7 +172,7 @@ namespace PacsLibrary.Query
         /// <param name="configuration">Server and Client configuration.</param>
         /// <param name="seriesResponse">Parameters specifying the query.</param>
         /// <returns>The SOPInstanceUID of the image representative of the series.</returns>
-        static string CFINDImagesInSeries(Configuration configuration,Series seriesResponse)
+        static string CFINDImagesInSeries(Configuration configuration, Series seriesResponse)
         {
             var imageIDs = new List<string>();
 
@@ -200,7 +203,7 @@ namespace PacsLibrary.Query
                 var _networkStream = new DesktopNetworkStream(configuration, true, true);
                 client.Send(_networkStream, configuration.thisNodeAET, configuration.AET, 5000);
             }
-            catch (Exception) { Debug.cantReachServer();Console.WriteLine("sono qui"); }
+            catch (Exception) { Debug.cantReachServer(); Console.WriteLine("sono qui"); }
 
             // get just the image at the half of the series
             string SOPInstanceUID = "";
@@ -218,7 +221,7 @@ namespace PacsLibrary.Query
         /// <param name="seriesResponse">Parameters specifying the query.</param>
         /// <param name="SOPInstanceUID">SOPInstanceUID specifying the query.</param>
         /// <returns>The .dcm image representative of the series as a BitmapImage.</returns>
-        static BitmapImage CMOVEImage(Configuration configuration,Series seriesResponse, string SOPInstanceUID)
+        static BitmapImage CMOVEImage(Configuration configuration, Series seriesResponse, string SOPInstanceUID)
         {
             // init move request
             var cmove = new DicomCMoveRequest(configuration.thisNodeAET, seriesResponse.getStudyInstanceUID(), seriesResponse.getSeriesInstanceUID(), SOPInstanceUID);

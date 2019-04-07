@@ -13,6 +13,7 @@ namespace GUI
         public MainWindow()
         {
             InitializeComponent();
+            new Program(this);
             frame.Navigate(queryPage);
         }
 

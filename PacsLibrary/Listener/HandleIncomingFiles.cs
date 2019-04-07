@@ -5,6 +5,7 @@ using Dicom.Network;
 using System;
 using System.IO;
 using System.Threading;
+using PacsLibrary.Configurator;
 
 namespace PacsLibrary.Listener
 {
@@ -49,7 +50,7 @@ namespace PacsLibrary.Listener
             string SOPInstanceUID = "";
             request.Dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out SOPInstanceUID);
 
-            var configuration = new Configuration("ServerConfig.txt");
+            var configuration = new Configuration();
 
             // Anonymize all files
             if (configuration.anonymizeData)
@@ -68,7 +69,7 @@ namespace PacsLibrary.Listener
 
         private static void updateDatabase()
         {
-            var configuration = new Configuration("ServerConfig.txt");
+            var configuration = new Configuration();
             string fileDestination = configuration.fileDestination;
             string dicomDirPath = Path.Combine(fileDestination, "DICOMDIR");
 

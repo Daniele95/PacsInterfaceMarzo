@@ -1,21 +1,25 @@
 ﻿using Dicom.Network;
 using System;
 using System.Security.Cryptography.X509Certificates;
+using PacsLibrary.Configurator;
 
 namespace PacsLibrary.Listener
 {
     public class Listener
     {
         /// <summary>
-        /// Inits a TcpListener for incoming DICOM datasets on the local port specified in the 
+        /// Initializes a TcpListener for incoming DICOM datasets on the local port specified in the 
         /// <see cref="Configuration"/>. If TLS authentication is enabled in <see cref="Configuration"/>,
         /// the TcpListener is started with a Certificate which will be
         /// used to authenticate the data stream incoming from the server.
         /// This requires administrator privileges.
         /// </summary>
         /// <param name="configuration"></param>
-        public static void init(Configuration configuration)
+        public Listener() { init(); }
+
+        public static void init()
         {
+            Configuration configuration = new Configuration();
             Console.Title = "Listener";
             string certificateName = "";
             if(configuration.useTls)

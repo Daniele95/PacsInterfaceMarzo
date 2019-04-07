@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Configuration.Properties
+namespace ConfiguratorWindow.Properties
 {
 
 

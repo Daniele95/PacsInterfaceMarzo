@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -66,9 +67,11 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="QueryPage.xaml.cs">
       <DependentUpon>QueryPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SetupGUI.cs" />
     <Page Include="DownloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,6 +122,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj">
+      <Project>{1fa33267-4908-4ffe-ac65-b7af8b9bf7ba}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Listener\Listener.csproj">
+      <Project>{da0c556e-7f6a-4cec-8f8b-6e1d2e3ad029}</Project>
+      <Name>Listener</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PacsLibrary\PacsLibrary.csproj">
+      <Project>{7160a04d-2afe-4de1-8ecf-2958578ee919}</Project>
+      <Name>PacsLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

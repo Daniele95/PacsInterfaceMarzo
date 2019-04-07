@@ -48,12 +48,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurator\CECHO.cs" />
     <Compile Include="Listener\CStoreSCP.cs" />
     <Compile Include="Listener\Debug.cs" />
     <Compile Include="Listener\HandleIncomingFiles.cs" />
-    <Compile Include="Configuration.cs" />
+    <Compile Include="Configurator\Configuration.cs" />
     <Compile Include="Listener\InitListener.cs" />
-    <Compile Include="LocalQuery\LocalQuery.cs" />
+    <Compile Include="Query\LocalQuery.cs" />
+    <Compile Include="QueryObject.cs" />
     <Compile Include="Query\Debug.cs" />
     <Compile Include="Query\DesktopNetworkStream.cs" />
     <Compile Include="Query\Query.cs" />

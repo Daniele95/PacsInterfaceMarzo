@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PacsLibrary.Configurator;
 
 namespace PacsLibrary.Query
 {
@@ -70,11 +71,6 @@ namespace PacsLibrary.Query
             Console.Write("Querying server " + configuration.host + ":" + configuration.port +
                        " for IMAGES in series no. " + seriesResponse.getSeriesInstanceUID());
             breakLine();
-        }
-        public static string seriesPathCopied(string fullSeriesPath)
-        {
-            return "Full series path: " + Environment.NewLine + fullSeriesPath +
-                Environment.NewLine + "Copied into clipboard";
         }
     }
 }

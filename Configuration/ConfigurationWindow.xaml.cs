@@ -1,17 +1,13 @@
-﻿using Dicom.Network;
-using LiteDB;
+﻿using LiteDB;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using PacsLibrary;
+using PacsLibrary.Configurator;
 
-namespace Configuration
+namespace ConfiguratorWindow
 {
     public partial class ConfigurationWindow : Window
     {
@@ -26,14 +22,14 @@ namespace Configuration
         List<CheckBox> StudyProperties;
         List<CheckBox> SeriesProperties;
 
-        PacsLibrary.Configuration configuration;
+        Configuration configuration;
 
         public ConfigurationWindow()
         {
             InitializeComponent();
             this.Closed += new EventHandler(ConfigurationWindow_Closed);
 
-            configuration = new PacsLibrary.Configuration("ServerConfig.txt");
+            configuration = new Configuration();
 
             // show current configuration
             currentServer.Text = configuration.AET + "@" +
@@ -176,47 +172,18 @@ namespace Configuration
 
         private void testSelectedServer(object sender, RoutedEventArgs e)
         {
-            try
+            if (listView.Items.Count != 0)
             {
-                var server = new DicomServer<DicomCEchoProvider>();
+                server selectedServer = listView.SelectedItem as server;
+                if (selectedServer == null) selectedServer = listView.Items[0] as server;
+                string info = "Tested connection to: " + selectedServer.AET + "@" + selectedServer.ip + ":" + selectedServer.port
+                        + Environment.NewLine;
 
-                var client = new DicomClient();
-                client.NegotiateAsyncOps();
-                bool result = true;
+                bool result= CECHO.Send(selectedServer.ip, selectedServer.port, selectedServer.AET, configuration.thisNodeAET);
 
-                for (int i = 0; i < 10; i++)
-                {
-                    var request = new DicomCEchoRequest();
-                    request.OnResponseReceived = (req, response) =>
-                    {
-                        if (response.Status.ToString() != "Success") result = false;
-                    };
-                    client.AddRequest(request);
-                }
-
-
-                if (listView.Items.Count != 0)
-                {
-                    server selectedServer = listView.SelectedItem as server;
-                    if (selectedServer == null) selectedServer = listView.Items[0] as server;
-                    string info = "Tested connection to: " + selectedServer.AET + "@" + selectedServer.ip + ":" + selectedServer.port
-                            + Environment.NewLine;
-                    try
-                    {
-                        client.Send(selectedServer.ip, int.Parse(selectedServer.port), false, configuration.thisNodeAET, selectedServer.AET);
-                        if (result) MessageBox.Show(info + "Success");
-                        else MessageBox.Show(info + "Server did not respond correctly");
-                    }
-                    catch (Exception ec)
-                    {
-                        MessageBox.Show(info + "Could not reach server");
-                    }
-                }
-
+                if (result) MessageBox.Show(info + "Success");
+                else MessageBox.Show(info + "Server did not respond correctly");
             }
-            catch (Exception ee) { MessageBox.Show(ee.Message); }
-
-
         }
 
         private void addNewServer(object sender, RoutedEventArgs e)
