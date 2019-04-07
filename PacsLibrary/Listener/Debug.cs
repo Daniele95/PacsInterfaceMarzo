@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PacsLibrary.Listener
 {
-    public class Debug
+    internal class Debug
     {
         public const bool verbose = false;
 

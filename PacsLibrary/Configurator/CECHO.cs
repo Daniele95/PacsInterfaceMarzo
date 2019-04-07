@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace PacsLibrary.Configurator
 {
-    public class CECHO
+    public static class CECHO
     {
-        public static bool Send(string host, string port, string AET, string thisNodeAET)
+        public static bool Send(string host, int port, string AET, string thisNodeAET)
         {
             var server = new DicomServer<DicomCEchoProvider>();
 
@@ -29,7 +29,7 @@ namespace PacsLibrary.Configurator
 
             try
             {
-                client.Send(host, int.Parse(port), false, thisNodeAET, AET);
+                client.Send(host, port, false, thisNodeAET, AET);
             }
             catch (Exception) { }
             return result;

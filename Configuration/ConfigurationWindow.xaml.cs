@@ -179,7 +179,7 @@ namespace ConfiguratorWindow
                 string info = "Tested connection to: " + selectedServer.AET + "@" + selectedServer.ip + ":" + selectedServer.port
                         + Environment.NewLine;
 
-                bool result= CECHO.Send(selectedServer.ip, selectedServer.port, selectedServer.AET, configuration.thisNodeAET);
+                bool result= CECHO.Send(selectedServer.ip, int.Parse(selectedServer.port), selectedServer.AET, configuration.thisNodeAET);
 
                 if (result) MessageBox.Show(info + "Success");
                 else MessageBox.Show(info + "Server did not respond correctly");

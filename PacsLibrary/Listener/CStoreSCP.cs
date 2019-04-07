@@ -9,7 +9,7 @@ namespace PacsLibrary.Listener
     /// <summary>
     /// A type of <see cref="DicomService"/> used to listen for incoming DICOM files (implements C-StoreSCP of the DICOM standard).
     /// </summary>
-    public class CStoreSCP : DicomService, IDicomServiceProvider, IDicomCStoreProvider, IDicomCEchoProvider
+    internal class CStoreSCP : DicomService, IDicomServiceProvider, IDicomCStoreProvider, IDicomCEchoProvider
     {
         // accepted transfer syntaxes
         private static DicomTransferSyntax[] AcceptedTransferSyntaxes = new DicomTransferSyntax[]

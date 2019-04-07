@@ -1,4 +1,3 @@
-C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.csprojAssemblyReference.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\obj\Debug\PacsLibrary.csproj.CoreCompileInputs.cache
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\PacsLibrary.dll
 C:\Users\daniele\Documents\Visual Studio 2017\Projects\PacsInterfaceGennaio\PacsLibrary\bin\Debug\PacsLibrary.pdb

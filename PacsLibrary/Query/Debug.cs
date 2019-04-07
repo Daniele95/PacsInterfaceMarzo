@@ -8,7 +8,7 @@ using PacsLibrary.Configurator;
 namespace PacsLibrary.Query
 {
 
-    public class Debug
+    internal class Debug
     {
         static void line()
         {

@@ -16,7 +16,7 @@ namespace PacsLibrary.Query
     /// <summary>
     /// .NET implementation of <see cref="INetworkStream"/>.
     /// </summary>
-    public sealed class DesktopNetworkStream : INetworkStream
+    internal sealed class DesktopNetworkStream : INetworkStream
     {
         #region FIELDS
 
