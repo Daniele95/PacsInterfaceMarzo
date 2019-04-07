@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace PacsLibrary.Query
 {
     /// <summary>
-    /// A Query parameter used to specify a query, identified by name (its DICOM tag, eg "PatientName"),
+    /// A parameter used to specify a query, identified by name (its DICOM tag, eg "PatientName"),
     /// value (eg "Doe^Pierre"), and visibility in the query results.
     /// </summary>
     [Serializable]
@@ -21,8 +21,8 @@ namespace PacsLibrary.Query
         public bool visible { get; set; } = true;
 
         /// <summary>
-        /// Given the DICOM tag as string (the QueryParameter name), 
-        /// returns the corresponding value in the DicomTag enumerator.
+        /// Given the QueryParameter name (eg. "StudyInstanceUID"), returns the corresponding element
+        /// of the DicomTag enumerator (eg. DicomTag.StudyInstanceUID).
         /// </summary>
         /// <returns>An element of the DicomTag enumerator.</returns>
         public DicomTag getTag()
@@ -42,10 +42,11 @@ namespace PacsLibrary.Query
         public Study() { }
 
         /// <summary>
-        /// Fills this Study with the <see cref="DicomDataset"/> returned as query result
+        /// Fills this Study with the <see cref="DicomDataset"/> obtained from a STUDY level query.
         /// </summary>
-        /// <param name="dataset">Dataset containing the result of the STUDY level query.</param>
-        /// <param name="studyQuery">List of empty QueryParameter indicating which QueryParameter to extract from the dataset.</param>
+        /// <param name="dataset">Dataset containing the result of a STUDY level query.</param>
+        /// <param name="studyQuery">Empty Study indicating which <see cref="QueryParameter"/> to extract 
+        /// from the <see cref="DicomDataset"/>.</param>
         public Study(DicomDataset dataset, Study studyQuery)
         {
             dataset.TryGetSingleValue(DicomTag.StudyInstanceUID, out StudyInstanceUID);
@@ -89,7 +90,7 @@ namespace PacsLibrary.Query
         }
 
         /// <summary>
-        /// Gets the list of QueryParameters casted as a dynamic Expando Object,
+        /// Gets the list of QueryParameters as a dynamic Expando Object,
         /// useful to insert in a table.
         /// </summary>
         /// <returns>An Expando Object corresponding to this Study.</returns>
@@ -110,12 +111,12 @@ namespace PacsLibrary.Query
 
     /// <summary>
     /// Contains query parameters for a SERIES level query.
-    /// A Series is a 2d or 3d medical image stored in the PACS, can be the result of a
+    /// A Series is a 2d or 3d medical image stored in the PACS, that can be the result of a
     /// Magnetic Resonance, PET, TAC, et cetera.
     /// It can contain from one to a hundred or more medical (.dcm) images, which are
     /// the "slices" composing the full 3d image.
     /// In other cases it can contain all other kinds of medical documents,
-    /// always store as .dcm images.
+    /// also stored as .dcm images.
     /// </summary>
     [Serializable]
     public class Series : Study
@@ -123,10 +124,11 @@ namespace PacsLibrary.Query
         public Series() { }
 
         /// <summary>
-        /// Fills this Series with the <see cref="DicomDataset"/> returned as query result
+        /// Fills this Series with the <see cref="DicomDataset"/> resulting from a SERIES level query.
         /// </summary>
         /// <param name="dataset">Dataset containing the result of the SERIES level query.</param>
-        /// <param name="seriesQuery">List of empty QueryParameter indicating which QueryParameter to extract from the dataset.</param>
+        /// <param name="seriesQuery">List of empty QueryParameter indicating which <see cref="QueryParameter"/> to extract 
+        /// from the <see cref="DicomDataset"/>.</param>
         public Series(DicomDataset dataset, Series seriesQuery) : base(dataset, seriesQuery) { }
 
         protected string SeriesInstanceUID = "";
@@ -167,7 +169,7 @@ namespace PacsLibrary.Query
         /// its StudyInstanceUID and SeriesInstanceUID. Each .dcm image is then saved in this path with its 
         /// SOPinstanceUID.
         /// </summary>
-        /// <param name="fileDestination">The destination of the DICOM files specified by the user in the configurator.</param>
+        /// <param name="fileDestination">The destination of the DICOM files, specified by the user in the <see cref="Configuration"/>.</param>
         /// <returns>The calculated path for saving this Series.</returns>
         public string getFullPath(string fileDestination)
         {

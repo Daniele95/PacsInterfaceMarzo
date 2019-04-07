@@ -13,6 +13,7 @@ namespace PacsLibrary.Listener
     /// </summary>
     class HandleIncomingFiles
     {
+
         internal static DicomCStoreResponse onCStoreRequest(DicomCStoreRequest request)
         {
             bool singleImage = File.Exists("singleImage.txt");

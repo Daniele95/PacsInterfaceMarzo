@@ -99,7 +99,7 @@ namespace PacsInterface
         List<Study> localStudyResponses;
         void searchLocalStudies(Study studyTemplate)
         {
-            localStudyResponses = LocalQuery.searchLocalStudies(configuration);
+            localStudyResponses = LocalQuery.CFINDLocalStudies(configuration);
             setupGUI.addLocalStudiesToTable(localStudyResponses);
         }
 
@@ -107,7 +107,7 @@ namespace PacsInterface
         List<Series> localSeriesResponses;
         void searchLocalSeries(int index)
         {
-            localSeriesResponses = LocalQuery.searchLocalSeries(configuration, localStudyResponses[index]);
+            localSeriesResponses = LocalQuery.CFINDLocalSeries(configuration, localStudyResponses[index]);
             setupGUI.addLocalSeriesToTable(localSeriesResponses);
             addThumbs(localSeriesResponses);
         }

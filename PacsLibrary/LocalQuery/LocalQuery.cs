@@ -14,7 +14,13 @@ namespace PacsLibrary.LocalQuery
 {
     public class LocalQuery
     {
-        public static List<Study> searchLocalStudies(Configuration configuration)
+        /// <summary>
+        /// Searches for Studies in the local path, specified by the user in the <see cref="Configuration"/>,
+        /// and indexed by the DICOMDIR database.
+        /// Implements a local C-FIND at STUDY level command of the DICOM standard
+        /// </summary>
+        /// <param name="configuration">Info on the path and hierarchy used to store the DICOM files.</param>
+        public static List<Study> CFINDLocalStudies(Configuration configuration)
         {
             string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
 
@@ -40,7 +46,13 @@ namespace PacsLibrary.LocalQuery
 
         }
 
-        public static List<Series> searchLocalSeries(Configuration configuration, Study study )
+        /// <summary>
+        /// Searches for the Series matching a given <see cref="Study"/>, in the local path specified by the user in the <see cref="Configuration"/>, and indexed by the DICOMDIR database.
+        /// Implements a local C-FIND at SERIES level command of the DICOM standard.
+        /// Implements 
+        /// </summary>
+        /// <param name="configuration">Info on the path and hierarchy used to store the DICOM files.</param>
+        public static List<Series> CFINDLocalSeries(Configuration configuration, Study study )
         {
             string dicomDirPath = Path.Combine(configuration.fileDestination, "DICOMDIR");
 
@@ -73,6 +85,12 @@ namespace PacsLibrary.LocalQuery
 
         }
 
+        /// <summary>
+        /// Gets an image representative of the <see cref="Series"/> in the local database.
+        /// </summary>
+        /// <param name="configuration">Info on the path and hierarchy used to store the DICOM files.</param>
+        /// <param name="series"></param>
+        /// <returns></returns>
         public static BitmapImage getThumb(Configuration configuration,Series series)
         {
             var imageJpg = new BitmapImage();

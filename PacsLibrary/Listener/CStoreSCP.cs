@@ -33,7 +33,7 @@ namespace PacsLibrary.Listener
             return HandleIncomingFiles.onCStoreRequest(request);
         }
 
-        //
+        //---------------------------
 
         public CStoreSCP(INetworkStream stream, Encoding fallbackEncoding, Dicom.Log.Logger log)
             : base(stream, fallbackEncoding, log) { }
