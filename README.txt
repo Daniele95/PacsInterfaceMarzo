@@ -27,7 +27,7 @@ I hereby included the server I used to test the library, which is contained in t
 THIS NODE:
 This is an info the server must know too for the C-Move command to work, for instance in my TestServer it is specified in the file 'ae.properties'.
 
-USE TLS CRYPTOGRAPHY: be sure to enable it in case you want to query a server with enabled Tls Authentication (I included one in the TestServer folder). In this case be sure to specify the right path for the Key Store and Trust Store Locations (I put them inside the Main Directory)
+USE TLS CRYPTOGRAPHY: be sure to enable it in case you want to query a server with enabled Tls Authentication (I included one in the TestServer folder). In this case be sure to specify the right path for the Key Store and Trust Store Locations (see end of this README)
 
 The resulting configuration is written in the 'ServerConfig.txt' file
 
@@ -58,3 +58,21 @@ The 'DesktopNetworkStream.cs' overrides a class in the Fo-Dicom Library and is c
 You then have the Listener classes, which include 'InitListener.cs', which starts a new DicomServer of type 'CStoreSCP.cs' (using also Tls if specified)
 'CStoreSCP.cs' contains all the methods the listener uses to handle incoming connections
 The 'HandleIncomingFiles.cs' actually isolates the most importants of these methods and implements them as required (ie saves the data sent from the server).
+
+
+GENERATE A KEY - TRUST CERTIFICATES FOR TLS AUTHENTICATION--------------------------------------------
+Here is how to generate the needed server-client certificates for tls authentication.
+The TestServer we use (dcm4che) is Java so it easily reads .jks format (java certificates) 
+so we will generate the needed ones with the 'Keytool' java utility.
+
+insert instead of 'rama' your machine's name, and instead of 'daniele' your name:
+
+# keytool -genkey -keyalg RSA -dname "CN=rama.dcm4che.org OU=daniele O=rama L=Milano C=IT" --keystore rama.jks -alias rama
+
+# keytool -export -file rama.cert -keystore rama.jks -alias rama
+
+# keytool -import -file rama.cert -keystore trust.jks -alias rama
+
+now we have the certificates for the dcm4che server. To put them inside our program (in the configuration) we need them in .p12 format:
+
+# keytool -importkeystore -srckeystore mySrvKeystore -destkeystore mySrvKeystore.p12 -srcstoretype JKS -deststoretype PKCS12

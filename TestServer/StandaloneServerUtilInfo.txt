@@ -3,7 +3,7 @@ a simple standalone DICOM server.
 This server contains 4 series, each one containing just one or a few images.
 To run the server simply execute 'server.bat'. It will start serving the local port 11118.
 
-To run the server with enabled TLS (transmission secure layer) cryptography execute 'serverTls.bat'.
+To run the server with enabled TLS (transmission secure layer) cryptography execute 'serverTls.bat'. Specify your client-server certificates in .jks format, inside the 'serverTls.bat' command.
 
 
 The 'DICOM' folder contains the database and is indexed by the 'dicomDatabase' file.
