@@ -27,7 +27,8 @@ I hereby included the server I used to test the library, which is contained in t
 THIS NODE:
 This is an info the server must know too for the C-Move command to work, for instance in my TestServer it is specified in the file 'ae.properties'.
 
-USE TLS CRYPTOGRAPHY: be sure to enable it in case you want to query a server with enabled Tls Authentication (I included one in the TestServer folder). In this case be sure to specify the right path for the Key Store and Trust Store Locations (see end of this README)
+USE TLS CRYPTOGRAPHY: be sure to enable it in case you want to query a server with enabled Tls Authentication (I included one in the TestServer folder). In this case be sure to specify the right path for the Key Store. I included a keystore called 'rama.p12' in the main directory, corresponding to 
+the 'rama.jks' and 'trust.jks' which are in the TestServer folder. To generete your custom public/private key pair, see end of this README.
 
 The resulting configuration is written in the 'ServerConfig.txt' file
 
