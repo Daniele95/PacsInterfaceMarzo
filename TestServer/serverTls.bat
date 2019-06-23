@@ -1,1 +1,1 @@
- ./dcm4che-5.14.1/bin/dcmqrscp -b MIOSERVER:11118 --dicomdir ./dicomDatabase   --ae-config ae.properties --tls-aes    --trust-store ./trust.jks --trust-store-pass daniele --key-store rama.jks --key-store-pass daniele
+ ./dcm4che-5.14.1/bin/dcmqrscp -b MIOSERVER:11118 --dicomdir ./dicomDatabase   --ae-config aeTls.properties --tls-aes    --trust-store ./trust.jks --trust-store-pass daniele --key-store rama.jks --key-store-pass daniele
