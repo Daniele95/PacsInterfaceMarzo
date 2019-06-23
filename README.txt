@@ -60,7 +60,7 @@ You then have the Listener classes, which include 'InitListener.cs', which start
 The 'HandleIncomingFiles.cs' actually isolates the most importants of these methods and implements them as required (ie saves the data sent from the server).
 
 
-GENERATE A KEY - TRUST CERTIFICATES FOR TLS AUTHENTICATION--------------------------------------------
+GENERATE A PUBLIC-PRIVATE KEY PAIR FOR TLS AUTHENTICATION--------------------------------------------
 Here is how to generate the needed server-client certificates for tls authentication.
 The TestServer we use (dcm4che) is Java so it easily reads .jks format (java certificates) 
 so we will generate the needed ones with the 'Keytool' java utility.
@@ -73,6 +73,25 @@ insert instead of 'rama' your machine's name, and instead of 'daniele' your name
 
 # keytool -import -file rama.cert -keystore trust.jks -alias rama
 
-now we have the certificates for the dcm4che server. To put them inside our program (in the configuration) we need them in .p12 format:
+We now have a keystore, containing public key (for the client) and private key (for the server), 
+plust a trust store, containing a certificate, given to the server, which certifies the authenticity of the client.
+Assign them to the dcm4che server in ae.properties. 
+To put the public key inside our client program (in the configuration) we need them in .p12 format:
 
 # keytool -importkeystore -srckeystore mySrvKeystore -destkeystore mySrvKeystore.p12 -srcstoretype JKS -deststoretype PKCS12
+
+Now select the created file in the configurator.
+
+
+ADDING THE FO-DICOM SOURCE TO YOUR PROJECT--------------------------------------------------------------------
+Fo-Dicom is a very good library on which this library is based. This library actually references the NuGet Package.
+To add the source from github, first download it.
+
+add the following project to your visual studio solution:
+fo-dicom\Platform\Desktop\DICOM.Desktop.csproj
+
+add to your solution also the Shared Project:
+fo-dicom\DICOM\DICOM.Shared.shproj
+
+reference chain: your project must reference DICOM.Desktop,
+DICOM.Desktop must reference DICOM.Shared

@@ -40,10 +40,8 @@ namespace ConfiguratorWindow
             destinationBox.Text = configuration.fileDestination;
 
             useTlsCheckBox.IsChecked = configuration.useTls;
-            KeyStorePathField.Text = configuration.keyPath;
-            keyStorePasswordField.Text = configuration.keyPassword;
-            trustStorePathField.Text = configuration.certificatePath;
-            trustStorePasswordField.Text = configuration.certificatePassword;
+            trustStorePathField.Text = configuration.keyStorePath;
+            trustStorePasswordField.Text = configuration.keyStorePassword;
             //
 
             // show list of known servers
@@ -97,10 +95,8 @@ namespace ConfiguratorWindow
 
         private void ConfigurationWindow_Closed(object sender, EventArgs e)
         {
-            configuration.keyPath = KeyStorePathField.Text;
-            configuration.keyPassword=keyStorePasswordField.Text;
-            configuration.certificatePath = trustStorePathField.Text;
-            configuration.certificatePassword = trustStorePasswordField.Text;
+            configuration.keyStorePath = trustStorePathField.Text;
+            configuration.keyStorePassword = trustStorePasswordField.Text;
             configuration.write();
         }
 
@@ -276,14 +272,7 @@ namespace ConfiguratorWindow
                 configuration.fileDestination = destinationBox.Text;
             }
         }
-
-        private void keyStoreLocationBrowse_Clicked(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.OpenFileDialog openFolderDialog = new System.Windows.Forms.OpenFileDialog();
-            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                KeyStorePathField.Text = openFolderDialog.FileName;
-        }
-
+        
         private void trustStoreLocationBrowse_Clicked(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog openFolderDialog = new System.Windows.Forms.OpenFileDialog();

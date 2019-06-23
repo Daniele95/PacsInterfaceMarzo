@@ -26,10 +26,8 @@ namespace PacsLibrary.Configurator
         public string fileDestination { get; set; } = "C:/Dicom";
 
         public bool useTls { get; set; } = false;
-        public string certificatePath { get; set; } = "C:/trustStore.p12";
-        public string certificatePassword { get; set; } = "password";
-        public string keyPath { get; set; } = "C:/keyStore.p12";
-        public string keyPassword { get; set; } = "password";
+        public string keyStorePath { get; set; } = "C:/keyStore.p12";
+        public string keyStorePassword { get; set; } = "password";
 
         public Study studyTemplate { get; set; } = new Study {
             new QueryParameter{ name= "StudyInstanceUID",   value="", visible=true },
@@ -87,17 +85,14 @@ namespace PacsLibrary.Configurator
         /// <param name="thisNodeAET">Application Entity Title with which the Server identifies the Client (this machine).</param>
         /// <param name="thisNodePort">Port of the Client where the Server will send data.</param>
         /// <param name="fileDestination">Destination where DICOM data incoming from the server will be stored on this machine.</param>
-        /// <param name="certificatePath">Archive .p12 of certificates (Trust Store) released by a Certificate Authority for this Server - Client data exchange. It's usually a self-signed certificate (the exchange takes place in a LAN) which can be generated with the Java utility Keytool. It's used by the peer receiving the query to authenticate the incoming data stream.</param>
-        /// <param name="certificatePassword">Password of the Trust Store.</param>
         /// <param name="keyPath">Archive .p12 containing peer identities and private keys (Key Store) used to authenticate the data exchange. It's sent from the peer initiating the query to the peer receiving the query.</param>
         /// <param name="keyPassword">Password of the Key Store.</param>
-        public Configuration(string host, int port, string AET, bool anonymizeData, string thisNodeAET, int thisNodePort, string fileDestination, string certificatePath, string certificatePassword, string keyPath, string keyPassword)
+        public Configuration(string host, int port, string AET, bool anonymizeData, string thisNodeAET, int thisNodePort, string fileDestination, string keyPath, string keyPassword)
         {
             this.host = host; this.port = port; this.AET = AET;
             this.anonymizeData = anonymizeData; this.thisNodeAET = thisNodeAET;
             this.thisNodePort = thisNodePort; this.fileDestination = fileDestination;
-            this.certificatePath = certificatePath; this.certificatePassword = certificatePassword;
-            this.keyPath = keyPath; this.keyPassword = keyPassword;
+            this.keyStorePath = keyPath; this.keyStorePassword = keyPassword;
         }
 
         /// <summary>

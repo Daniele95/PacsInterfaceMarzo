@@ -60,9 +60,8 @@ namespace PacsLibrary.Query
 #if NETSTANDARD
                 ssl.AuthenticateAsClientAsync(host).Wait();
 #else
-                var key = new X509Certificate2(configuration.keyPath, configuration.keyPassword);
-                var cert = new X509Certificate2(configuration.certificatePath, configuration.certificatePassword);
-                var clientCertificateCollection = new X509CertificateCollection(new X509Certificate[] { cert, key });
+                var key = new X509Certificate2(configuration.keyStorePath, configuration.keyStorePassword);
+                var clientCertificateCollection = new X509CertificateCollection(new X509Certificate[] { key, key });
                 ssl.AuthenticateAsClient(configuration.host, clientCertificateCollection, SslProtocols.Tls12, false);
 #endif
                 stream = ssl;
