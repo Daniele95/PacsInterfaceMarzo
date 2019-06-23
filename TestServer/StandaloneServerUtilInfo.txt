@@ -1,0 +1,15 @@
+Dcm4che is a library containing many test utilities. Here we use the 'dcmqrscp' utility,
+a simple standalone DICOM server.
+This server contains 4 series, each one containing just one or a few images.
+To run the server simply execute 'server.bat'. It will start serving the local port 11118.
+
+To run the server with enabled TLS (transmission secure layer) cryptography execute 'serverTls.bat'.
+
+
+The 'DICOM' folder contains the database and is indexed by the 'dicomDatabase' file.
+
+The 'ae.properties' lists the Dicom AE (application entities) known from the server
+plus their local port. The server will use this info in case it needs to issue a Dicom C-Move command.
+
+The 'rama.jks' and 'trust.jks' are archives of keys needed for the TLS authentication. 
+The same files need to be placed in the client machine (in the right archive format).
